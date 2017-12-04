@@ -1,0 +1,5 @@
+{
+    "elm.makeOutput": "app.js",
+    "elm.formatOnSave": true,
+    "elm.analyseEnabled": true
+}
