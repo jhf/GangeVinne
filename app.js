@@ -23621,152 +23621,155 @@ var _jhf$gangevinne$Main$view = function (model) {
 	return A2(
 		_mdgriffith$style_elements$Element$layout,
 		_jhf$gangevinne$Main$stylesheet,
-		function () {
-			var _p6 = model.oppgave;
-			var a = _p6._0;
-			var b = _p6._1;
-			var x = _elm_lang$core$Basics$toString(a);
-			var y = _elm_lang$core$Basics$toString(b);
-			return A3(
-				_mdgriffith$style_elements$Element$column,
-				_jhf$gangevinne$Main$None,
-				{
-					ctor: '::',
-					_0: _mdgriffith$style_elements$Element_Attributes$width(_mdgriffith$style_elements$Element_Attributes$fill),
-					_1: {
+		_mdgriffith$style_elements$Element$screen(
+			function () {
+				var _p6 = model.oppgave;
+				var a = _p6._0;
+				var b = _p6._1;
+				var x = _elm_lang$core$Basics$toString(a);
+				var y = _elm_lang$core$Basics$toString(b);
+				return A3(
+					_mdgriffith$style_elements$Element$column,
+					_jhf$gangevinne$Main$None,
+					{
 						ctor: '::',
-						_0: _mdgriffith$style_elements$Element_Attributes$height(_mdgriffith$style_elements$Element_Attributes$fill),
-						_1: {ctor: '[]'}
-					}
-				},
-				{
-					ctor: '::',
-					_0: A3(
-						_mdgriffith$style_elements$Element$row,
-						_jhf$gangevinne$Main$None,
-						{
+						_0: _mdgriffith$style_elements$Element_Attributes$width(
+							_mdgriffith$style_elements$Element_Attributes$percent(100)),
+						_1: {
 							ctor: '::',
-							_0: _mdgriffith$style_elements$Element_Attributes$verticalCenter,
-							_1: {
+							_0: _mdgriffith$style_elements$Element_Attributes$height(
+								_mdgriffith$style_elements$Element_Attributes$percent(100)),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: A3(
+							_mdgriffith$style_elements$Element$row,
+							_jhf$gangevinne$Main$None,
+							{
 								ctor: '::',
-								_0: _mdgriffith$style_elements$Element_Attributes$center,
-								_1: {ctor: '[]'}
-							}
-						},
-						{
-							ctor: '::',
-							_0: function () {
-								var sendSvar = A2(_jhf$gangevinne$Main$Svar, model.oppgave, model.skrevet);
-								return A3(
-									_mdgriffith$style_elements$Element$column,
-									_jhf$gangevinne$Main$Oppgave,
-									{ctor: '[]'},
-									A2(
-										_elm_lang$core$Basics_ops['++'],
-										{
-											ctor: '::',
-											_0: A3(
-												_mdgriffith$style_elements$Element$el,
-												_jhf$gangevinne$Main$None,
-												{ctor: '[]'},
-												_mdgriffith$style_elements$Element$text('Hei Sunniva!')),
-											_1: {
+								_0: _mdgriffith$style_elements$Element_Attributes$verticalCenter,
+								_1: {
+									ctor: '::',
+									_0: _mdgriffith$style_elements$Element_Attributes$center,
+									_1: {ctor: '[]'}
+								}
+							},
+							{
+								ctor: '::',
+								_0: function () {
+									var sendSvar = A2(_jhf$gangevinne$Main$Svar, model.oppgave, model.skrevet);
+									return A3(
+										_mdgriffith$style_elements$Element$column,
+										_jhf$gangevinne$Main$Oppgave,
+										{ctor: '[]'},
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											{
 												ctor: '::',
 												_0: A3(
 													_mdgriffith$style_elements$Element$el,
 													_jhf$gangevinne$Main$None,
 													{ctor: '[]'},
-													_mdgriffith$style_elements$Element$text('Svar på oppgaven')),
+													_mdgriffith$style_elements$Element$text('Hei Sunniva!')),
 												_1: {
 													ctor: '::',
 													_0: A3(
-														_mdgriffith$style_elements$Element$row,
+														_mdgriffith$style_elements$Element$el,
 														_jhf$gangevinne$Main$None,
 														{ctor: '[]'},
-														{
-															ctor: '::',
-															_0: A3(
-																_mdgriffith$style_elements$Element$el,
-																_jhf$gangevinne$Main$None,
-																{ctor: '[]'},
-																_mdgriffith$style_elements$Element$text(
-																	A2(
-																		_elm_lang$core$Basics_ops['++'],
-																		x,
-																		A2(
-																			_elm_lang$core$Basics_ops['++'],
-																			' * ',
-																			A2(_elm_lang$core$Basics_ops['++'], y, ' = '))))),
-															_1: {
+														_mdgriffith$style_elements$Element$text('Svar på oppgaven')),
+													_1: {
+														ctor: '::',
+														_0: A3(
+															_mdgriffith$style_elements$Element$row,
+															_jhf$gangevinne$Main$None,
+															{ctor: '[]'},
+															{
 																ctor: '::',
 																_0: A3(
-																	_mdgriffith$style_elements$Element_Input$text,
+																	_mdgriffith$style_elements$Element$el,
 																	_jhf$gangevinne$Main$None,
-																	{
-																		ctor: '::',
-																		_0: _mdgriffith$style_elements$Element_Attributes$id('svar'),
-																		_1: {ctor: '[]'}
-																	},
-																	{
-																		label: _mdgriffith$style_elements$Element_Input$hiddenLabel('Svar'),
-																		options: {
-																			ctor: '::',
-																			_0: _mdgriffith$style_elements$Element_Input$focusOnLoad,
-																			_1: {
-																				ctor: '::',
-																				_0: _mdgriffith$style_elements$Element_Input$textKey(
-																					_elm_lang$core$Basics$toString(
-																						_elm_lang$core$List$length(model.regnet))),
-																				_1: {ctor: '[]'}
-																			}
-																		},
-																		value: model.skrevet,
-																		onChange: _jhf$gangevinne$Main$Skrev
-																	}),
+																	{ctor: '[]'},
+																	_mdgriffith$style_elements$Element$text(
+																		A2(
+																			_elm_lang$core$Basics_ops['++'],
+																			x,
+																			A2(
+																				_elm_lang$core$Basics_ops['++'],
+																				' * ',
+																				A2(_elm_lang$core$Basics_ops['++'], y, ' = '))))),
 																_1: {
 																	ctor: '::',
 																	_0: A3(
-																		_mdgriffith$style_elements$Element$button,
+																		_mdgriffith$style_elements$Element_Input$text,
 																		_jhf$gangevinne$Main$None,
 																		{
 																			ctor: '::',
-																			_0: _mdgriffith$style_elements$Element_Events$onClick(sendSvar),
+																			_0: _mdgriffith$style_elements$Element_Attributes$id('svar'),
 																			_1: {ctor: '[]'}
 																		},
-																		_mdgriffith$style_elements$Element$text('Sjekk svaret!')),
-																	_1: {ctor: '[]'}
+																		{
+																			label: _mdgriffith$style_elements$Element_Input$hiddenLabel('Svar'),
+																			options: {
+																				ctor: '::',
+																				_0: _mdgriffith$style_elements$Element_Input$focusOnLoad,
+																				_1: {
+																					ctor: '::',
+																					_0: _mdgriffith$style_elements$Element_Input$textKey(
+																						_elm_lang$core$Basics$toString(
+																							_elm_lang$core$List$length(model.regnet))),
+																					_1: {ctor: '[]'}
+																				}
+																			},
+																			value: model.skrevet,
+																			onChange: _jhf$gangevinne$Main$Skrev
+																		}),
+																	_1: {
+																		ctor: '::',
+																		_0: A3(
+																			_mdgriffith$style_elements$Element$button,
+																			_jhf$gangevinne$Main$None,
+																			{
+																				ctor: '::',
+																				_0: _mdgriffith$style_elements$Element_Events$onClick(sendSvar),
+																				_1: {ctor: '[]'}
+																			},
+																			_mdgriffith$style_elements$Element$text('Sjekk svaret!')),
+																		_1: {ctor: '[]'}
+																	}
 																}
-															}
-														}),
-													_1: {ctor: '[]'}
-												}
-											}
-										},
-										function () {
-											var visRegnet = function (_p7) {
-												var _p8 = _p7;
-												var resultat = function () {
-													var _p9 = _p8._2;
-													if (_p9.ctor === 'Riktig') {
-														return 'Riktig :-)';
-													} else {
-														return 'Galt :-(';
+															}),
+														_1: {ctor: '[]'}
 													}
-												}();
-												return A3(
-													_mdgriffith$style_elements$Element$el,
-													_jhf$gangevinne$Main$None,
-													{ctor: '[]'},
-													_mdgriffith$style_elements$Element$text(resultat));
-											};
-											return A2(_elm_lang$core$List$map, visRegnet, model.regnet);
-										}()));
-							}(),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				});
-		}());
+												}
+											},
+											function () {
+												var visRegnet = function (_p7) {
+													var _p8 = _p7;
+													var resultat = function () {
+														var _p9 = _p8._2;
+														if (_p9.ctor === 'Riktig') {
+															return 'Riktig :-)';
+														} else {
+															return 'Galt :-(';
+														}
+													}();
+													return A3(
+														_mdgriffith$style_elements$Element$el,
+														_jhf$gangevinne$Main$None,
+														{ctor: '[]'},
+														_mdgriffith$style_elements$Element$text(resultat));
+												};
+												return A2(_elm_lang$core$List$map, visRegnet, model.regnet);
+											}()));
+								}(),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					});
+			}()));
 };
 var _jhf$gangevinne$Main$main = _elm_lang$html$Html$program(
 	{init: _jhf$gangevinne$Main$init, view: _jhf$gangevinne$Main$view, update: _jhf$gangevinne$Main$update, subscriptions: _jhf$gangevinne$Main$subscriptions})();
