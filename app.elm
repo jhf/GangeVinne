@@ -98,7 +98,9 @@ main =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Ingenting -> (model, Cmd.none)
+        Ingenting ->
+            ( model, Cmd.none )
+
         NyOppgave oppgave ->
             ( { model | oppgave = oppgave }, Cmd.none )
 
@@ -127,7 +129,7 @@ update msg model =
                                 , skrevet = ""
                             }
                     in
-                        ( nyModel, Cmd.batch [lagTilfeldigOppgave,hoppTilSkriving] )
+                        ( nyModel, Cmd.batch [ lagTilfeldigOppgave, hoppTilSkriving ] )
 
 
 
@@ -137,22 +139,21 @@ update msg model =
 view : Model -> Html Msg
 view model =
     E.layout stylesheet <|
-        let
-            (Gange a b) =
-                model.oppgave
+        E.screen <|
+            let
+                (Gange a b) =
+                    model.oppgave
 
-            x =
-                toString a
+                x =
+                    toString a
 
-            y =
-                toString b
-        in
-            E.column None
-                [ Ea.width Ea.fill
-                , Ea.height Ea.fill
-                ]
-                [ E.row None
-                    [ Ea.verticalCenter
+                y =
+                    toString b
+            in
+                E.row None
+                    [ Ea.width <| Ea.percent 100
+                    , Ea.height <| Ea.percent 100
+                    , Ea.verticalCenter
                     , Ea.center
                     ]
                     [ let
@@ -167,7 +168,7 @@ view model =
                                 []
                                 [ E.el None [] (E.text (x ++ " * " ++ y ++ " = "))
                                 , Ei.text None
-                                    [Ea.id "svar"]
+                                    [ Ea.id "svar" ]
                                     { label = Ei.hiddenLabel "Svar"
                                     , options =
                                         [ Ei.focusOnLoad
@@ -197,13 +198,12 @@ view model =
                                     (List.map visRegnet model.regnet)
                             )
                     ]
-                ]
 
 
 hoppTilSkriving : Cmd Msg
 hoppTilSkriving =
     Dom.focus "svar"
-    |> Task.attempt (\_ -> Ingenting)
+        |> Task.attempt (\_ -> Ingenting)
 
 
 lagTilfeldigOppgave : Cmd Msg
