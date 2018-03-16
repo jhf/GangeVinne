@@ -7,8 +7,9 @@ Bruk den her https://jhf.github.io/GangeVinne
 ## Hvordan programmere på din egen maskin
 
 Gjør klar maskina
-*  Installer Visual Studio Code - fra https://code.visualstudio.com/download
-*  Installer støtte for Elm.
+* Installer Visual Studio Code - fra https://code.visualstudio.com/download
+* Installer støtte for Elm fra https://guide.elm-lang.org/install.html
+* Installer verktøy for å installere nyttige ting https://yarnpkg.com/lang/en/ 
 *  Installer verktøy som trengs for Elm støtte:
   * `yarn global install elm-format`
   * `yarn global install elm-analyse`
