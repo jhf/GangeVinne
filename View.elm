@@ -1,8 +1,6 @@
-module Main exposing (..)
+module View exposing (..)
 
 import List
-import String exposing (toInt)
-import Maybe
 import Style exposing (..)
 import Style.Color as Sc
 import Style.Font as Sf
@@ -13,124 +11,8 @@ import Element.Events as Ev
 import Element.Input as Ei
 import Element.Keyed as Ek
 import Html exposing (Html)
-import Random
-import Dom
-import Task
-
-
--- MODEL
-
-
-type alias Model =
-    { oppgave : Oppgave
-    , regnet : List ( Oppgave, Tall, Sjekk )
-    , skrevet : String
-    }
-
-
-type Oppgave
-    = Gange Tall Tall
-
-
-type Sjekk
-    = Riktig
-    | Galt
-
-
-type alias Tall =
-    Int
-
-
-init : ( Model, Cmd Msg )
-init =
-    ( { oppgave = Gange 0 0
-      , regnet = []
-      , skrevet = ""
-      }
-    , lagTilfeldigOppgave
-    )
-
-
-subscriptions : a -> Sub Msg
-subscriptions model =
-    Sub.none
-
-
-
--- Styling
-
-
-type Styling
-    = None
-    | Oppgave
-
-
-stylesheet : StyleSheet Styling variation
-stylesheet =
-    Style.styleSheet
-        [ Style.style None []
-        , Style.style Oppgave
-            [ Sc.background Color.darkBlue, Sc.text Color.white ]
-        ]
-
-
-
--- UPDATE
-
-
-type Msg
-    = Svar Oppgave String
-    | Skrev String
-    | NyOppgave Oppgave
-    | Ingenting
-
-
-main : Program Never Model Msg
-main =
-    Html.program
-        { init = init
-        , view = view
-        , update = update
-        , subscriptions = subscriptions
-        }
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        Ingenting ->
-            ( model, Cmd.none )
-
-        NyOppgave oppgave ->
-            ( { model | oppgave = oppgave }, Cmd.none )
-
-        Skrev noe ->
-            ( { model | skrevet = noe }, Cmd.none )
-
-        Svar ((Gange a b) as oppgave) skrevet ->
-            case toInt skrevet of
-                Err _ ->
-                    ( model, Cmd.none )
-
-                Ok svar ->
-                    let
-                        resultat =
-                            if svar == a * b then
-                                Riktig
-                            else
-                                Galt
-
-                        gjort =
-                            ( oppgave, svar, resultat )
-
-                        nyModel =
-                            { model
-                                | regnet = gjort :: model.regnet
-                                , skrevet = ""
-                            }
-                    in
-                        ( nyModel, Cmd.batch [ lagTilfeldigOppgave, hoppTilSkriving ] )
-
+import Model exposing (..)
+import Update exposing (Msg(..))
 
 
 -- VIEW
@@ -200,21 +82,25 @@ view model =
                     ]
 
 
-hoppTilSkriving : Cmd Msg
-hoppTilSkriving =
-    Dom.focus "svar"
-        |> Task.attempt (\_ -> Ingenting)
+-- Styling
 
 
-lagTilfeldigOppgave : Cmd Msg
-lagTilfeldigOppgave =
-    let
-        lagOppgave ( a, b ) =
-            NyOppgave <| Gange a b
-    in
-        Random.generate lagOppgave randomPoint
+type Styling
+    = None
+    | Oppgave
 
 
-randomPoint : Random.Generator ( Int, Int )
-randomPoint =
-    Random.pair (Random.int 0 10) (Random.int 0 10)
+stylesheet : StyleSheet Styling variation
+stylesheet =
+    Style.styleSheet
+        [ Style.style None []
+        , Style.style Oppgave
+            [ Sc.background Color.darkBlue, Sc.text Color.white ]
+        ]
+
+
+
+
+
+
+
