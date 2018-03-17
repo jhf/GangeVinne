@@ -9943,6 +9943,100 @@ var _elm_lang$window$Window$subMap = F2(
 	});
 _elm_lang$core$Native_Platform.effectManagers['Window'] = {pkg: 'elm-lang/window', init: _elm_lang$window$Window$init, onEffects: _elm_lang$window$Window$onEffects, onSelfMsg: _elm_lang$window$Window$onSelfMsg, tag: 'sub', subMap: _elm_lang$window$Window$subMap};
 
+var _jhf$gangevinne$Model$Model = F3(
+	function (a, b, c) {
+		return {oppgave: a, regnet: b, skrevet: c};
+	});
+var _jhf$gangevinne$Model$Gange = F2(
+	function (a, b) {
+		return {ctor: 'Gange', _0: a, _1: b};
+	});
+var _jhf$gangevinne$Model$Galt = {ctor: 'Galt'};
+var _jhf$gangevinne$Model$Riktig = {ctor: 'Riktig'};
+
+var _jhf$gangevinne$Update$randomPoint = A2(
+	_elm_lang$core$Random$pair,
+	A2(_elm_lang$core$Random$int, 0, 10),
+	A2(_elm_lang$core$Random$int, 0, 10));
+var _jhf$gangevinne$Update$Ingenting = {ctor: 'Ingenting'};
+var _jhf$gangevinne$Update$hoppTilSkriving = A2(
+	_elm_lang$core$Task$attempt,
+	function (_p0) {
+		return _jhf$gangevinne$Update$Ingenting;
+	},
+	_elm_lang$dom$Dom$focus('svar'));
+var _jhf$gangevinne$Update$NyOppgave = function (a) {
+	return {ctor: 'NyOppgave', _0: a};
+};
+var _jhf$gangevinne$Update$lagTilfeldigOppgave = function () {
+	var lagOppgave = function (_p1) {
+		var _p2 = _p1;
+		return _jhf$gangevinne$Update$NyOppgave(
+			A2(_jhf$gangevinne$Model$Gange, _p2._0, _p2._1));
+	};
+	return A2(_elm_lang$core$Random$generate, lagOppgave, _jhf$gangevinne$Update$randomPoint);
+}();
+var _jhf$gangevinne$Update$update = F2(
+	function (msg, model) {
+		var _p3 = msg;
+		switch (_p3.ctor) {
+			case 'Ingenting':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'NyOppgave':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{oppgave: _p3._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'Skrev':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{skrevet: _p3._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				var _p4 = _elm_lang$core$String$toInt(_p3._1);
+				if (_p4.ctor === 'Err') {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					var _p5 = _p4._0;
+					var resultat = _elm_lang$core$Native_Utils.eq(_p5, _p3._0._0 * _p3._0._1) ? _jhf$gangevinne$Model$Riktig : _jhf$gangevinne$Model$Galt;
+					var gjort = {ctor: '_Tuple3', _0: _p3._0, _1: _p5, _2: resultat};
+					var nyModel = _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							regnet: {ctor: '::', _0: gjort, _1: model.regnet},
+							skrevet: ''
+						});
+					return {
+						ctor: '_Tuple2',
+						_0: nyModel,
+						_1: _elm_lang$core$Platform_Cmd$batch(
+							{
+								ctor: '::',
+								_0: _jhf$gangevinne$Update$lagTilfeldigOppgave,
+								_1: {
+									ctor: '::',
+									_0: _jhf$gangevinne$Update$hoppTilSkriving,
+									_1: {ctor: '[]'}
+								}
+							})
+					};
+				}
+		}
+	});
+var _jhf$gangevinne$Update$Skrev = function (a) {
+	return {ctor: 'Skrev', _0: a};
+};
+var _jhf$gangevinne$Update$Svar = F2(
+	function (a, b) {
+		return {ctor: 'Svar', _0: a, _1: b};
+	});
+
 var _mdgriffith$style_elements$Style_Internal_Batchable$toList = function (batchables) {
 	var flatten = function (batch) {
 		var _p0 = batch;
@@ -12016,7 +12110,7 @@ var _mdgriffith$style_elements$Style_Internal_Render_Property$background = funct
 			case 'ToUp':
 				return 'to top';
 			case 'ToDown':
-				return 'to bottomn';
+				return 'to bottom';
 			case 'ToRight':
 				return 'to right';
 			case 'ToTopRight':
@@ -12106,7 +12200,7 @@ var _mdgriffith$style_elements$Style_Internal_Render_Property$background = funct
 									var _p37 = _p35._0.size;
 									switch (_p37.ctor) {
 										case 'Contain':
-											return 'container';
+											return 'contain';
 										case 'Cover':
 											return 'cover';
 										case 'BackgroundWidth':
@@ -20430,10 +20524,10 @@ var _mdgriffith$style_elements$Element_Input$LabelAbove = function (a) {
 	return {ctor: 'LabelAbove', _0: a};
 };
 var _mdgriffith$style_elements$Element_Input$labelAbove = _mdgriffith$style_elements$Element_Input$LabelAbove;
-var _mdgriffith$style_elements$Element_Input$labelBelow = _mdgriffith$style_elements$Element_Input$LabelAbove;
 var _mdgriffith$style_elements$Element_Input$LabelBelow = function (a) {
 	return {ctor: 'LabelBelow', _0: a};
 };
+var _mdgriffith$style_elements$Element_Input$labelBelow = _mdgriffith$style_elements$Element_Input$LabelBelow;
 var _mdgriffith$style_elements$Element_Input$ErrorAboveBelow = F2(
 	function (a, b) {
 		return {ctor: 'ErrorAboveBelow', _0: a, _1: b};
@@ -22325,7 +22419,7 @@ var _mdgriffith$style_elements$Element_Input$selectMenu = F3(
 					}
 				} : ((input.isOpen && (!_elm_lang$core$Native_Utils.eq(input.selected, _elm_lang$core$Maybe$Nothing))) ? {
 					ctor: '::',
-					_0: _mdgriffith$style_elements$Element_Events$onClick(
+					_0: _mdgriffith$style_elements$Element_Events$onMouseDown(
 						input.onUpdate(_mdgriffith$style_elements$Element_Input$CloseMenu)),
 					_1: {
 						ctor: '::',
@@ -22346,7 +22440,7 @@ var _mdgriffith$style_elements$Element_Input$selectMenu = F3(
 					}
 				} : (((!input.isOpen) && (!_elm_lang$core$Native_Utils.eq(input.selected, _elm_lang$core$Maybe$Nothing))) ? {
 					ctor: '::',
-					_0: _mdgriffith$style_elements$Element_Events$onClick(
+					_0: _mdgriffith$style_elements$Element_Events$onMouseDown(
 						input.onUpdate(_mdgriffith$style_elements$Element_Input$OpenMenu)),
 					_1: {
 						ctor: '::',
@@ -23487,37 +23581,20 @@ var _mdgriffith$style_elements$Element_Keyed$NamedGrid = F3(
 		return {rows: a, columns: b, cells: c};
 	});
 
-var _jhf$gangevinne$Main$randomPoint = A2(
-	_elm_lang$core$Random$pair,
-	A2(_elm_lang$core$Random$int, 0, 10),
-	A2(_elm_lang$core$Random$int, 0, 10));
-var _jhf$gangevinne$Main$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$none;
-};
-var _jhf$gangevinne$Main$Model = F3(
-	function (a, b, c) {
-		return {oppgave: a, regnet: b, skrevet: c};
-	});
-var _jhf$gangevinne$Main$Gange = F2(
-	function (a, b) {
-		return {ctor: 'Gange', _0: a, _1: b};
-	});
-var _jhf$gangevinne$Main$Galt = {ctor: 'Galt'};
-var _jhf$gangevinne$Main$Riktig = {ctor: 'Riktig'};
-var _jhf$gangevinne$Main$Oppgave = {ctor: 'Oppgave'};
-var _jhf$gangevinne$Main$None = {ctor: 'None'};
-var _jhf$gangevinne$Main$stylesheet = _mdgriffith$style_elements$Style$styleSheet(
+var _jhf$gangevinne$View$Oppgave = {ctor: 'Oppgave'};
+var _jhf$gangevinne$View$None = {ctor: 'None'};
+var _jhf$gangevinne$View$stylesheet = _mdgriffith$style_elements$Style$styleSheet(
 	{
 		ctor: '::',
 		_0: A2(
 			_mdgriffith$style_elements$Style$style,
-			_jhf$gangevinne$Main$None,
+			_jhf$gangevinne$View$None,
 			{ctor: '[]'}),
 		_1: {
 			ctor: '::',
 			_0: A2(
 				_mdgriffith$style_elements$Style$style,
-				_jhf$gangevinne$Main$Oppgave,
+				_jhf$gangevinne$View$Oppgave,
 				{
 					ctor: '::',
 					_0: _mdgriffith$style_elements$Style_Color$background(_elm_lang$core$Color$darkBlue),
@@ -23530,107 +23607,20 @@ var _jhf$gangevinne$Main$stylesheet = _mdgriffith$style_elements$Style$styleShee
 			_1: {ctor: '[]'}
 		}
 	});
-var _jhf$gangevinne$Main$Ingenting = {ctor: 'Ingenting'};
-var _jhf$gangevinne$Main$hoppTilSkriving = A2(
-	_elm_lang$core$Task$attempt,
-	function (_p0) {
-		return _jhf$gangevinne$Main$Ingenting;
-	},
-	_elm_lang$dom$Dom$focus('svar'));
-var _jhf$gangevinne$Main$NyOppgave = function (a) {
-	return {ctor: 'NyOppgave', _0: a};
-};
-var _jhf$gangevinne$Main$lagTilfeldigOppgave = function () {
-	var lagOppgave = function (_p1) {
-		var _p2 = _p1;
-		return _jhf$gangevinne$Main$NyOppgave(
-			A2(_jhf$gangevinne$Main$Gange, _p2._0, _p2._1));
-	};
-	return A2(_elm_lang$core$Random$generate, lagOppgave, _jhf$gangevinne$Main$randomPoint);
-}();
-var _jhf$gangevinne$Main$init = {
-	ctor: '_Tuple2',
-	_0: {
-		oppgave: A2(_jhf$gangevinne$Main$Gange, 0, 0),
-		regnet: {ctor: '[]'},
-		skrevet: ''
-	},
-	_1: _jhf$gangevinne$Main$lagTilfeldigOppgave
-};
-var _jhf$gangevinne$Main$update = F2(
-	function (msg, model) {
-		var _p3 = msg;
-		switch (_p3.ctor) {
-			case 'Ingenting':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'NyOppgave':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{oppgave: _p3._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'Skrev':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{skrevet: _p3._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			default:
-				var _p4 = _elm_lang$core$String$toInt(_p3._1);
-				if (_p4.ctor === 'Err') {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				} else {
-					var _p5 = _p4._0;
-					var resultat = _elm_lang$core$Native_Utils.eq(_p5, _p3._0._0 * _p3._0._1) ? _jhf$gangevinne$Main$Riktig : _jhf$gangevinne$Main$Galt;
-					var gjort = {ctor: '_Tuple3', _0: _p3._0, _1: _p5, _2: resultat};
-					var nyModel = _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							regnet: {ctor: '::', _0: gjort, _1: model.regnet},
-							skrevet: ''
-						});
-					return {
-						ctor: '_Tuple2',
-						_0: nyModel,
-						_1: _elm_lang$core$Platform_Cmd$batch(
-							{
-								ctor: '::',
-								_0: _jhf$gangevinne$Main$lagTilfeldigOppgave,
-								_1: {
-									ctor: '::',
-									_0: _jhf$gangevinne$Main$hoppTilSkriving,
-									_1: {ctor: '[]'}
-								}
-							})
-					};
-				}
-		}
-	});
-var _jhf$gangevinne$Main$Skrev = function (a) {
-	return {ctor: 'Skrev', _0: a};
-};
-var _jhf$gangevinne$Main$Svar = F2(
-	function (a, b) {
-		return {ctor: 'Svar', _0: a, _1: b};
-	});
-var _jhf$gangevinne$Main$view = function (model) {
+var _jhf$gangevinne$View$view = function (model) {
 	return A2(
 		_mdgriffith$style_elements$Element$layout,
-		_jhf$gangevinne$Main$stylesheet,
+		_jhf$gangevinne$View$stylesheet,
 		_mdgriffith$style_elements$Element$screen(
 			function () {
-				var _p6 = model.oppgave;
-				var a = _p6._0;
-				var b = _p6._1;
+				var _p0 = model.oppgave;
+				var a = _p0._0;
+				var b = _p0._1;
 				var x = _elm_lang$core$Basics$toString(a);
 				var y = _elm_lang$core$Basics$toString(b);
 				return A3(
 					_mdgriffith$style_elements$Element$row,
-					_jhf$gangevinne$Main$None,
+					_jhf$gangevinne$View$None,
 					{
 						ctor: '::',
 						_0: _mdgriffith$style_elements$Element_Attributes$width(
@@ -23653,10 +23643,10 @@ var _jhf$gangevinne$Main$view = function (model) {
 					{
 						ctor: '::',
 						_0: function () {
-							var sendSvar = A2(_jhf$gangevinne$Main$Svar, model.oppgave, model.skrevet);
+							var sendSvar = A2(_jhf$gangevinne$Update$Svar, model.oppgave, model.skrevet);
 							return A3(
 								_mdgriffith$style_elements$Element$column,
-								_jhf$gangevinne$Main$Oppgave,
+								_jhf$gangevinne$View$Oppgave,
 								{ctor: '[]'},
 								A2(
 									_elm_lang$core$Basics_ops['++'],
@@ -23664,27 +23654,27 @@ var _jhf$gangevinne$Main$view = function (model) {
 										ctor: '::',
 										_0: A3(
 											_mdgriffith$style_elements$Element$el,
-											_jhf$gangevinne$Main$None,
+											_jhf$gangevinne$View$None,
 											{ctor: '[]'},
 											_mdgriffith$style_elements$Element$text('Hei Sunniva!')),
 										_1: {
 											ctor: '::',
 											_0: A3(
 												_mdgriffith$style_elements$Element$el,
-												_jhf$gangevinne$Main$None,
+												_jhf$gangevinne$View$None,
 												{ctor: '[]'},
 												_mdgriffith$style_elements$Element$text('Svar på oppgaven')),
 											_1: {
 												ctor: '::',
 												_0: A3(
 													_mdgriffith$style_elements$Element$row,
-													_jhf$gangevinne$Main$None,
+													_jhf$gangevinne$View$None,
 													{ctor: '[]'},
 													{
 														ctor: '::',
 														_0: A3(
 															_mdgriffith$style_elements$Element$el,
-															_jhf$gangevinne$Main$None,
+															_jhf$gangevinne$View$None,
 															{ctor: '[]'},
 															_mdgriffith$style_elements$Element$text(
 																A2(
@@ -23698,7 +23688,7 @@ var _jhf$gangevinne$Main$view = function (model) {
 															ctor: '::',
 															_0: A3(
 																_mdgriffith$style_elements$Element_Input$text,
-																_jhf$gangevinne$Main$None,
+																_jhf$gangevinne$View$None,
 																{
 																	ctor: '::',
 																	_0: _mdgriffith$style_elements$Element_Attributes$id('svar'),
@@ -23718,13 +23708,13 @@ var _jhf$gangevinne$Main$view = function (model) {
 																		}
 																	},
 																	value: model.skrevet,
-																	onChange: _jhf$gangevinne$Main$Skrev
+																	onChange: _jhf$gangevinne$Update$Skrev
 																}),
 															_1: {
 																ctor: '::',
 																_0: A3(
 																	_mdgriffith$style_elements$Element$button,
-																	_jhf$gangevinne$Main$None,
+																	_jhf$gangevinne$View$None,
 																	{
 																		ctor: '::',
 																		_0: _mdgriffith$style_elements$Element_Events$onClick(sendSvar),
@@ -23740,11 +23730,11 @@ var _jhf$gangevinne$Main$view = function (model) {
 										}
 									},
 									function () {
-										var visRegnet = function (_p7) {
-											var _p8 = _p7;
+										var visRegnet = function (_p1) {
+											var _p2 = _p1;
 											var resultat = function () {
-												var _p9 = _p8._2;
-												if (_p9.ctor === 'Riktig') {
+												var _p3 = _p2._2;
+												if (_p3.ctor === 'Riktig') {
 													return 'Riktig :-)';
 												} else {
 													return 'Galt :-(';
@@ -23752,7 +23742,7 @@ var _jhf$gangevinne$Main$view = function (model) {
 											}();
 											return A3(
 												_mdgriffith$style_elements$Element$el,
-												_jhf$gangevinne$Main$None,
+												_jhf$gangevinne$View$None,
 												{ctor: '[]'},
 												_mdgriffith$style_elements$Element$text(resultat));
 										};
@@ -23763,13 +23753,11 @@ var _jhf$gangevinne$Main$view = function (model) {
 					});
 			}()));
 };
-var _jhf$gangevinne$Main$main = _elm_lang$html$Html$program(
-	{init: _jhf$gangevinne$Main$init, view: _jhf$gangevinne$Main$view, update: _jhf$gangevinne$Main$update, subscriptions: _jhf$gangevinne$Main$subscriptions})();
 
 var Elm = {};
-Elm['Main'] = Elm['Main'] || {};
-if (typeof _jhf$gangevinne$Main$main !== 'undefined') {
-    _jhf$gangevinne$Main$main(Elm['Main'], 'Main', undefined);
+Elm['View'] = Elm['View'] || {};
+if (typeof _jhf$gangevinne$View$main !== 'undefined') {
+    _jhf$gangevinne$View$main(Elm['View'], 'View', undefined);
 }
 
 if (typeof define === "function" && define['amd'])
