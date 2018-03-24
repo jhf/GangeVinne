@@ -18,7 +18,7 @@ main =
 
 init : ( Model, Cmd Msg )
 init =
-    ( { steg = SkrivNavn {navn=""}
+    ( { steg = SkrivNavn { navn = "" }
       }
     , Cmd.none
     )

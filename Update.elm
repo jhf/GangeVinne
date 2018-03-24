@@ -26,6 +26,7 @@ update msg model =
             case msg of
                 Skrev noe ->
                     ( { model | steg = SkrivNavn { navn = noe } }, Cmd.none )
+
                 Navn ->
                     let
                         info =
@@ -33,11 +34,12 @@ update msg model =
                             , oppgave = Gange 0 0
                             , regnet = []
                             , skrevet = ""
+                            , oppgaveType = Ganging
                             }
                     in
-                    ( {model | steg = Regne info}
-                    , lagTilfeldigOppgave
-                    )
+                        ( { model | steg = Regne info }
+                        , lagTilfeldigOppgave
+                        )
 
                 _ ->
                     ( model, Cmd.none )
@@ -56,7 +58,7 @@ update msg model =
                 Skrev noe ->
                     ( { model | steg = Regne { info | skrevet = noe } }, Cmd.none )
 
-                Svar ((Gange a b) as oppgave) skrevet ->
+                Svar oppgave skrevet ->
                     case toInt skrevet of
                         Err _ ->
                             ( { model | steg = Regne { info | skrevet = "" } }, Cmd.none )
@@ -64,10 +66,22 @@ update msg model =
                         Ok svar ->
                             let
                                 resultat =
-                                    if svar == a * b then
-                                        Riktig
-                                    else
-                                        Galt
+                                    case oppgave of
+                                        Gange a b ->
+                                            if svar == a * b then
+                                                Riktig
+                                            else
+                                                Galt
+                                        Pluss a b ->
+                                            if svar == a + b then
+                                                Riktig
+                                            else
+                                                Galt
+                                        Minus a b ->
+                                            if svar == a - b then
+                                                Riktig
+                                            else
+                                                Galt
 
                                 gjort =
                                     { oppgave = oppgave, svar = svar, resultat = resultat }

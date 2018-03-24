@@ -18,6 +18,7 @@ type alias RegneInfo =
     , oppgave : Oppgave
     , regnet : List Gjort
     , skrevet : String
+    , oppgaveType : OppgaveType
     }
 
 
@@ -27,6 +28,8 @@ type alias Gjort =
 
 type Oppgave
     = Gange Tall Tall
+    | Pluss Tall Tall
+    | Minus Tall Tall
 
 
 type Sjekk
@@ -36,3 +39,7 @@ type Sjekk
 
 type alias Tall =
     Int
+
+type OppgaveType
+    = Ganging
+    | PlussOgMinus

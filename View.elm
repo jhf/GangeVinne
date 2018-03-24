@@ -130,12 +130,24 @@ viewRegnet regnet =
 
 
 visOppgave : Oppgave -> Element msg
-visOppgave (Gange a b) =
+visOppgave oppgave =
     let
+        (a,op,b) =
+            case oppgave of
+                Gange a b ->
+                    (a, "*" ,b)
+                Pluss a b ->
+                    (a, "+" ,b)
+                Minus a b ->
+                    (a, "-" ,b)
         x =
             toString a
 
         y =
             toString b
+
+        regneStykke =
+            x ++ " " ++ op ++ " " ++ y
     in
-        Element.text (x ++ " * " ++ y ++ " = ")
+    Element.text <| regneStykke ++ " = "
+
