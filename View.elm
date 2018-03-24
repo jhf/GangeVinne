@@ -4,20 +4,11 @@ import List
 import Color
 import Element exposing (Element, htmlAttribute)
 import Element.Events as Events
-
-
 import Element.Font as Font
-
 import Element.Input as Input
-
-
 import Element.Keyed as Keyed
-
 import Element.Background as Background
-
-
 import Element.Border as Border
-
 import Html exposing (Html)
 import Html.Attributes exposing (id, autocomplete)
 import Model exposing (..)
@@ -49,9 +40,9 @@ view model =
                 [ let
                     sendSvar =
                         Svar model.oppgave model.skrevet
+
                     oppgave =
                         Element.text (x ++ " * " ++ y ++ " = ")
-
                   in
                     Element.column
                         oppgaveUtseende
