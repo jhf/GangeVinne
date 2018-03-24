@@ -18580,10 +18580,15 @@ var _jhf$gangevinne$Keyboard$onKeydown = function (_p1) {
 		_jhf$gangevinne$Keyboard$onKeydownHtml(_p1));
 };
 
-var _jhf$gangevinne$Model$Model = F3(
-	function (a, b, c) {
-		return {oppgave: a, regnet: b, skrevet: c};
-	});
+var _jhf$gangevinne$Model$Model = function (a) {
+	return {steg: a};
+};
+var _jhf$gangevinne$Model$Regne = function (a) {
+	return {ctor: 'Regne', _0: a};
+};
+var _jhf$gangevinne$Model$SkrivNavn = function (a) {
+	return {ctor: 'SkrivNavn', _0: a};
+};
 var _jhf$gangevinne$Model$Gange = F2(
 	function (a, b) {
 		return {ctor: 'Gange', _0: a, _1: b};
@@ -18591,7 +18596,7 @@ var _jhf$gangevinne$Model$Gange = F2(
 var _jhf$gangevinne$Model$Galt = {ctor: 'Galt'};
 var _jhf$gangevinne$Model$Riktig = {ctor: 'Riktig'};
 
-var _jhf$gangevinne$Update$randomPoint = A2(
+var _jhf$gangevinne$Update$toTilfeldigeTall = A2(
 	_elm_lang$core$Random$pair,
 	A2(_elm_lang$core$Random$int, 0, 10),
 	A2(_elm_lang$core$Random$int, 0, 10));
@@ -18611,64 +18616,128 @@ var _jhf$gangevinne$Update$lagTilfeldigOppgave = function () {
 		return _jhf$gangevinne$Update$NyOppgave(
 			A2(_jhf$gangevinne$Model$Gange, _p2._0, _p2._1));
 	};
-	return A2(_elm_lang$core$Random$generate, lagOppgave, _jhf$gangevinne$Update$randomPoint);
+	return A2(_elm_lang$core$Random$generate, lagOppgave, _jhf$gangevinne$Update$toTilfeldigeTall);
 }();
 var _jhf$gangevinne$Update$update = F2(
 	function (msg, model) {
-		var _p3 = msg;
-		switch (_p3.ctor) {
-			case 'Ingenting':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'NyOppgave':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{oppgave: _p3._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'Skrev':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{skrevet: _p3._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			default:
-				var _p4 = _elm_lang$core$String$toInt(_p3._1);
-				if (_p4.ctor === 'Err') {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				} else {
-					var _p5 = _p4._0;
-					var resultat = _elm_lang$core$Native_Utils.eq(_p5, _p3._0._0 * _p3._0._1) ? _jhf$gangevinne$Model$Riktig : _jhf$gangevinne$Model$Galt;
-					var gjort = {ctor: '_Tuple3', _0: _p3._0, _1: _p5, _2: resultat};
-					var nyModel = _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							regnet: {ctor: '::', _0: gjort, _1: model.regnet},
-							skrevet: ''
-						});
+		var _p3 = model.steg;
+		if (_p3.ctor === 'SkrivNavn') {
+			var _p4 = msg;
+			switch (_p4.ctor) {
+				case 'Skrev':
 					return {
 						ctor: '_Tuple2',
-						_0: nyModel,
-						_1: _elm_lang$core$Platform_Cmd$batch(
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
 							{
-								ctor: '::',
-								_0: _jhf$gangevinne$Update$lagTilfeldigOppgave,
-								_1: {
-									ctor: '::',
-									_0: _jhf$gangevinne$Update$hoppTilSkriving,
-									_1: {ctor: '[]'}
-								}
-							})
+								steg: _jhf$gangevinne$Model$SkrivNavn(
+									{navn: _p4._0})
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
 					};
-				}
+				case 'Navn':
+					var info = {
+						navn: _p3._0.navn,
+						oppgave: A2(_jhf$gangevinne$Model$Gange, 0, 0),
+						regnet: {ctor: '[]'},
+						skrevet: ''
+					};
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								steg: _jhf$gangevinne$Model$Regne(info)
+							}),
+						_1: _jhf$gangevinne$Update$lagTilfeldigOppgave
+					};
+				default:
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			}
+		} else {
+			var _p8 = _p3._0;
+			var _p5 = msg;
+			switch (_p5.ctor) {
+				case 'Ingenting':
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				case 'Navn':
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				case 'NyOppgave':
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								steg: _jhf$gangevinne$Model$Regne(
+									_elm_lang$core$Native_Utils.update(
+										_p8,
+										{oppgave: _p5._0}))
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				case 'Skrev':
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								steg: _jhf$gangevinne$Model$Regne(
+									_elm_lang$core$Native_Utils.update(
+										_p8,
+										{skrevet: _p5._0}))
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				default:
+					var _p6 = _elm_lang$core$String$toInt(_p5._1);
+					if (_p6.ctor === 'Err') {
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{
+									steg: _jhf$gangevinne$Model$Regne(
+										_elm_lang$core$Native_Utils.update(
+											_p8,
+											{skrevet: ''}))
+								}),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+					} else {
+						var _p7 = _p6._0;
+						var resultat = _elm_lang$core$Native_Utils.eq(_p7, _p5._0._0 * _p5._0._1) ? _jhf$gangevinne$Model$Riktig : _jhf$gangevinne$Model$Galt;
+						var gjort = {oppgave: _p5._0, svar: _p7, resultat: resultat};
+						var nyttSteg = _jhf$gangevinne$Model$Regne(
+							_elm_lang$core$Native_Utils.update(
+								_p8,
+								{
+									regnet: {ctor: '::', _0: gjort, _1: _p8.regnet},
+									skrevet: ''
+								}));
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{steg: nyttSteg}),
+							_1: _elm_lang$core$Platform_Cmd$batch(
+								{
+									ctor: '::',
+									_0: _jhf$gangevinne$Update$lagTilfeldigOppgave,
+									_1: {
+										ctor: '::',
+										_0: _jhf$gangevinne$Update$hoppTilSkriving,
+										_1: {ctor: '[]'}
+									}
+								})
+						};
+					}
+			}
 		}
 	});
 var _jhf$gangevinne$Update$Skrev = function (a) {
 	return {ctor: 'Skrev', _0: a};
 };
+var _jhf$gangevinne$Update$Navn = {ctor: 'Navn'};
 var _jhf$gangevinne$Update$Svar = F2(
 	function (a, b) {
 		return {ctor: 'Svar', _0: a, _1: b};
@@ -21856,15 +21925,210 @@ var _mdgriffith$stylish_elephants$Element_Keyed$el = F2(
 
 var _jhf$gangevinne$View$oppgaveUtseende = {
 	ctor: '::',
-	_0: _mdgriffith$stylish_elephants$Element_Background$color(_elm_lang$core$Color$darkBlue),
+	_0: _mdgriffith$stylish_elephants$Element_Background$color(_elm_lang$core$Color$lightBlue),
 	_1: {ctor: '[]'}
 };
-var _jhf$gangevinne$View$view = function (model) {
-	var _p0 = model.oppgave;
+var _jhf$gangevinne$View$viewRegne = function (info) {
+	var _p0 = info.oppgave;
 	var a = _p0._0;
 	var b = _p0._1;
 	var x = _elm_lang$core$Basics$toString(a);
 	var y = _elm_lang$core$Basics$toString(b);
+	var oppgave = _mdgriffith$stylish_elephants$Element$text(
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			x,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				' * ',
+				A2(_elm_lang$core$Basics_ops['++'], y, ' = '))));
+	var sendSvar = A2(_jhf$gangevinne$Update$Svar, info.oppgave, info.skrevet);
+	return A2(
+		_mdgriffith$stylish_elephants$Element$column,
+		_jhf$gangevinne$View$oppgaveUtseende,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			{
+				ctor: '::',
+				_0: A2(
+					_mdgriffith$stylish_elephants$Element$el,
+					{ctor: '[]'},
+					_mdgriffith$stylish_elephants$Element$text(
+						A2(_elm_lang$core$Basics_ops['++'], 'Hei ', info.navn))),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_mdgriffith$stylish_elephants$Element$el,
+						{ctor: '[]'},
+						_mdgriffith$stylish_elephants$Element$text('Svar på oppgaven')),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_mdgriffith$stylish_elephants$Element$row,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: A2(
+									_mdgriffith$stylish_elephants$Element$el,
+									{ctor: '[]'},
+									oppgave),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_mdgriffith$stylish_elephants$Element_Input$text,
+										{
+											ctor: '::',
+											_0: _mdgriffith$stylish_elephants$Element$htmlAttribute(
+												_elm_lang$html$Html_Attributes$id('svar')),
+											_1: {
+												ctor: '::',
+												_0: _mdgriffith$stylish_elephants$Element_Input$focusedOnLoad,
+												_1: {
+													ctor: '::',
+													_0: _jhf$gangevinne$Keyboard$onKeydown(
+														{
+															ctor: '::',
+															_0: _jhf$gangevinne$Keyboard$onEnter(sendSvar),
+															_1: {ctor: '[]'}
+														}),
+													_1: {
+														ctor: '::',
+														_0: _mdgriffith$stylish_elephants$Element$htmlAttribute(
+															_elm_lang$html$Html_Attributes$autocomplete(false)),
+														_1: {ctor: '[]'}
+													}
+												}
+											}
+										},
+										{
+											label: A2(
+												_mdgriffith$stylish_elephants$Element_Input$labelLeft,
+												{ctor: '[]'},
+												_mdgriffith$stylish_elephants$Element$empty),
+											text: info.skrevet,
+											onChange: _elm_lang$core$Maybe$Just(_jhf$gangevinne$Update$Skrev),
+											placeholder: _elm_lang$core$Maybe$Nothing
+										}),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_mdgriffith$stylish_elephants$Element_Input$button,
+											{
+												ctor: '::',
+												_0: _mdgriffith$stylish_elephants$Element_Events$onClick(sendSvar),
+												_1: {ctor: '[]'}
+											},
+											{
+												onPress: _elm_lang$core$Maybe$Just(sendSvar),
+												label: _mdgriffith$stylish_elephants$Element$text('Sjekk svaret!')
+											}),
+										_1: {ctor: '[]'}
+									}
+								}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}
+			},
+			function () {
+				var visRegnet = function (_p1) {
+					var _p2 = _p1;
+					var beskjed = function () {
+						var _p3 = _p2.resultat;
+						if (_p3.ctor === 'Riktig') {
+							return 'Riktig :-)';
+						} else {
+							return 'Galt :-(';
+						}
+					}();
+					return A2(
+						_mdgriffith$stylish_elephants$Element$el,
+						{ctor: '[]'},
+						_mdgriffith$stylish_elephants$Element$text(beskjed));
+				};
+				return A2(_elm_lang$core$List$map, visRegnet, info.regnet);
+			}()));
+};
+var _jhf$gangevinne$View$viewSkrivNavn = function (navn) {
+	return A2(
+		_mdgriffith$stylish_elephants$Element$column,
+		_jhf$gangevinne$View$oppgaveUtseende,
+		{
+			ctor: '::',
+			_0: A2(
+				_mdgriffith$stylish_elephants$Element$el,
+				{ctor: '[]'},
+				_mdgriffith$stylish_elephants$Element$text('Velkommen til GangeVinne!')),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_mdgriffith$stylish_elephants$Element$el,
+					{ctor: '[]'},
+					_mdgriffith$stylish_elephants$Element$text('Hva heter du?')),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_mdgriffith$stylish_elephants$Element$row,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: A2(
+								_mdgriffith$stylish_elephants$Element_Input$text,
+								{
+									ctor: '::',
+									_0: _mdgriffith$stylish_elephants$Element$htmlAttribute(
+										_elm_lang$html$Html_Attributes$id('navn')),
+									_1: {
+										ctor: '::',
+										_0: _mdgriffith$stylish_elephants$Element_Input$focusedOnLoad,
+										_1: {
+											ctor: '::',
+											_0: _jhf$gangevinne$Keyboard$onKeydown(
+												{
+													ctor: '::',
+													_0: _jhf$gangevinne$Keyboard$onEnter(_jhf$gangevinne$Update$Navn),
+													_1: {ctor: '[]'}
+												}),
+											_1: {
+												ctor: '::',
+												_0: _mdgriffith$stylish_elephants$Element$htmlAttribute(
+													_elm_lang$html$Html_Attributes$autocomplete(false)),
+												_1: {ctor: '[]'}
+											}
+										}
+									}
+								},
+								{
+									label: A2(
+										_mdgriffith$stylish_elephants$Element_Input$labelLeft,
+										{ctor: '[]'},
+										_mdgriffith$stylish_elephants$Element$text('Ditt navn:')),
+									text: navn,
+									onChange: _elm_lang$core$Maybe$Just(_jhf$gangevinne$Update$Skrev),
+									placeholder: _elm_lang$core$Maybe$Nothing
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_mdgriffith$stylish_elephants$Element_Input$button,
+									{
+										ctor: '::',
+										_0: _mdgriffith$stylish_elephants$Element_Events$onClick(_jhf$gangevinne$Update$Navn),
+										_1: {ctor: '[]'}
+									},
+									{
+										onPress: _elm_lang$core$Maybe$Just(_jhf$gangevinne$Update$Navn),
+										label: _mdgriffith$stylish_elephants$Element$text('')
+									}),
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
+var _jhf$gangevinne$View$view = function (model) {
 	return A2(
 		_mdgriffith$stylish_elephants$Element$layout,
 		{ctor: '[]'},
@@ -21886,113 +22150,12 @@ var _jhf$gangevinne$View$view = function (model) {
 			{
 				ctor: '::',
 				_0: function () {
-					var sendSvar = A2(_jhf$gangevinne$Update$Svar, model.oppgave, model.skrevet);
-					return A2(
-						_mdgriffith$stylish_elephants$Element$column,
-						_jhf$gangevinne$View$oppgaveUtseende,
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							{
-								ctor: '::',
-								_0: A2(
-									_mdgriffith$stylish_elephants$Element$el,
-									{ctor: '[]'},
-									_mdgriffith$stylish_elephants$Element$text('Hei Sunniva!')),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_mdgriffith$stylish_elephants$Element$el,
-										{ctor: '[]'},
-										_mdgriffith$stylish_elephants$Element$text('Svar på oppgaven')),
-									_1: {
-										ctor: '::',
-										_0: A2(
-											_mdgriffith$stylish_elephants$Element$row,
-											{ctor: '[]'},
-											{
-												ctor: '::',
-												_0: A2(
-													_mdgriffith$stylish_elephants$Element$el,
-													{ctor: '[]'},
-													_mdgriffith$stylish_elephants$Element$text(
-														A2(
-															_elm_lang$core$Basics_ops['++'],
-															x,
-															A2(
-																_elm_lang$core$Basics_ops['++'],
-																' * ',
-																A2(_elm_lang$core$Basics_ops['++'], y, ' = '))))),
-												_1: {
-													ctor: '::',
-													_0: A2(
-														_mdgriffith$stylish_elephants$Element_Input$text,
-														{
-															ctor: '::',
-															_0: _mdgriffith$stylish_elephants$Element$htmlAttribute(
-																_elm_lang$html$Html_Attributes$id('svar')),
-															_1: {
-																ctor: '::',
-																_0: _mdgriffith$stylish_elephants$Element_Input$focusedOnLoad,
-																_1: {
-																	ctor: '::',
-																	_0: _jhf$gangevinne$Keyboard$onKeydown(
-																		{
-																			ctor: '::',
-																			_0: _jhf$gangevinne$Keyboard$onEnter(sendSvar),
-																			_1: {ctor: '[]'}
-																		}),
-																	_1: {ctor: '[]'}
-																}
-															}
-														},
-														{
-															label: A2(
-																_mdgriffith$stylish_elephants$Element_Input$labelAbove,
-																{ctor: '[]'},
-																_mdgriffith$stylish_elephants$Element$text('Svar')),
-															text: model.skrevet,
-															onChange: _elm_lang$core$Maybe$Just(_jhf$gangevinne$Update$Skrev),
-															placeholder: _elm_lang$core$Maybe$Nothing
-														}),
-													_1: {
-														ctor: '::',
-														_0: A2(
-															_mdgriffith$stylish_elephants$Element_Input$button,
-															{
-																ctor: '::',
-																_0: _mdgriffith$stylish_elephants$Element_Events$onClick(sendSvar),
-																_1: {ctor: '[]'}
-															},
-															{
-																onPress: _elm_lang$core$Maybe$Just(sendSvar),
-																label: _mdgriffith$stylish_elephants$Element$text('Sjekk svaret!')
-															}),
-														_1: {ctor: '[]'}
-													}
-												}
-											}),
-										_1: {ctor: '[]'}
-									}
-								}
-							},
-							function () {
-								var visRegnet = function (_p1) {
-									var _p2 = _p1;
-									var resultat = function () {
-										var _p3 = _p2._2;
-										if (_p3.ctor === 'Riktig') {
-											return 'Riktig :-)';
-										} else {
-											return 'Galt :-(';
-										}
-									}();
-									return A2(
-										_mdgriffith$stylish_elephants$Element$el,
-										{ctor: '[]'},
-										_mdgriffith$stylish_elephants$Element$text(resultat));
-								};
-								return A2(_elm_lang$core$List$map, visRegnet, model.regnet);
-							}()));
+					var _p4 = model.steg;
+					if (_p4.ctor === 'SkrivNavn') {
+						return _jhf$gangevinne$View$viewSkrivNavn(_p4._0.navn);
+					} else {
+						return _jhf$gangevinne$View$viewRegne(_p4._0);
+					}
 				}(),
 				_1: {ctor: '[]'}
 			}));
@@ -22004,11 +22167,10 @@ var _jhf$gangevinne$Main$subscriptions = function (model) {
 var _jhf$gangevinne$Main$init = {
 	ctor: '_Tuple2',
 	_0: {
-		oppgave: A2(_jhf$gangevinne$Model$Gange, 0, 0),
-		regnet: {ctor: '[]'},
-		skrevet: ''
+		steg: _jhf$gangevinne$Model$SkrivNavn(
+			{navn: ''})
 	},
-	_1: _jhf$gangevinne$Update$lagTilfeldigOppgave
+	_1: _elm_lang$core$Platform_Cmd$none
 };
 var _jhf$gangevinne$Main$main = _elm_lang$html$Html$program(
 	{init: _jhf$gangevinne$Main$init, view: _jhf$gangevinne$View$view, update: _jhf$gangevinne$Update$update, subscriptions: _jhf$gangevinne$Main$subscriptions})();
