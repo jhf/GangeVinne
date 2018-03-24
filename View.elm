@@ -28,7 +28,7 @@ view model =
             , Element.width <| Element.shrink
             ]
             [ case model.steg of
-                SkrivNavn {navn} ->
+                SkrivNavn { navn } ->
                     viewSkrivNavn navn
 
                 Regne info ->
@@ -36,8 +36,7 @@ view model =
             ]
 
 
-
-viewSkrivNavn : String  -> Element Msg
+viewSkrivNavn : String -> Element Msg
 viewSkrivNavn navn =
     Element.column
         oppgaveUtseende
@@ -63,31 +62,20 @@ viewSkrivNavn navn =
         ]
 
 
+viewRegne : RegneInfo -> Element Msg
 viewRegne info =
     let
-        (Gange a b) =
-            info.oppgave
-
-        x =
-            toString a
-
-        y =
-            toString b
+        sendSvar =
+            Svar info.oppgave info.skrevet
     in
-        let
-            sendSvar =
-                Svar info.oppgave info.skrevet
-
-            oppgave =
-                Element.text (x ++ " * " ++ y ++ " = ")
-        in
-            Element.column
+        Element.row []
+            [ Element.column
                 oppgaveUtseende
-                ([ Element.el [] (Element.text <| "Hei " ++ info.navn)
-                 , Element.el [] (Element.text "Svar på oppgaven")
-                 , Element.row
+                [ Element.el [] (Element.text <| "Hei " ++ info.navn)
+                , Element.el [] (Element.text "Svar på oppgaven")
+                , Element.row
                     []
-                    [ Element.el [] oppgave
+                    [ Element.el [] <| visOppgave info.oppgave
                     , Input.text
                         [ htmlAttribute <| id "svar"
                         , Input.focusedOnLoad
@@ -104,22 +92,48 @@ viewRegne info =
                         , label = Element.text "Sjekk svaret!"
                         }
                     ]
-                 ]
-                    ++ let
-                        visRegnet {resultat} =
-                            let
-                                beskjed =
-                                    case resultat of
-                                        Riktig ->
-                                            "Riktig :-)"
+                ]
+            , viewRegnet info.regnet
+            ]
 
-                                        Galt ->
-                                            "Galt :-("
-                            in
-                                Element.el [] (Element.text beskjed)
-                       in
-                        (List.map visRegnet info.regnet)
-                )
+
+viewRegnet : List Gjort -> Element Msg
+viewRegnet regnet =
+    let
+        visRegnet gjort =
+            let
+                svar : Element msg
+                svar =
+                    let
+                        tall =
+                            toString gjort.svar
+                    in
+                        case gjort.resultat of
+                            Riktig ->
+                                Element.el
+                                    [ Background.color Color.lightGreen ]
+                                    (Element.text tall)
+
+                            Galt ->
+                                Element.el
+                                    [ Background.color Color.lightRed ]
+                                    (Element.text tall)
+            in
+                Element.row [] [ visOppgave gjort.oppgave, svar ]
+    in
+        Element.column [] <| List.map visRegnet regnet
+
+
+visOppgave : Oppgave -> Element msg
+visOppgave (Gange a b) =
+    let
+        x =
+            toString a
+
+        y =
+            toString b
+    in
+        Element.text (x ++ " * " ++ y ++ " = ")
 
 
 
