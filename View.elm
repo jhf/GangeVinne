@@ -39,7 +39,7 @@ view model =
 viewSkrivNavn : String -> Element Msg
 viewSkrivNavn navn =
     Element.column
-        oppgaveUtseende
+        [ Background.color Color.lightGreen ]
         [ Element.el [] (Element.text "Velkommen til GangeVinne!")
         , Element.el [] (Element.text "Hva heter du?")
         , Element.row []
@@ -68,9 +68,14 @@ viewRegne info =
         sendSvar =
             Svar info.oppgave info.skrevet
     in
-        Element.row []
+        Element.row
+            [ Element.spacing 10 ]
             [ Element.column
-                oppgaveUtseende
+                [ Element.centerX
+                , Element.centerY
+                , Element.height Element.shrink
+                , Background.color Color.lightBlue
+                ]
                 [ Element.el [] (Element.text <| "Hei " ++ info.navn)
                 , Element.el [] (Element.text "Svar på oppgaven")
                 , Element.row
@@ -134,12 +139,3 @@ visOppgave (Gange a b) =
             toString b
     in
         Element.text (x ++ " * " ++ y ++ " = ")
-
-
-
--- Styling
-
-
-oppgaveUtseende : List (Element.Attr decorative msg)
-oppgaveUtseende =
-    [ Background.color Color.lightBlue ]
