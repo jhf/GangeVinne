@@ -2,24 +2,24 @@ module View exposing (..)
 
 import List
 import Color
-import Element exposing (Element)
+import Element exposing (Element, htmlAttribute)
 import Element.Events as Events
 
 
--- import Element.Font as Font
+import Element.Font as Font
 
 import Element.Input as Input
 
 
--- import Element.Keyed as Keyed
+import Element.Keyed as Keyed
 
 import Element.Background as Background
 
 
--- import Element.Border as Border
+import Element.Border as Border
 
 import Html exposing (Html)
-import Html.Attributes exposing (id)
+import Html.Attributes exposing (id, autocomplete)
 import Model exposing (..)
 import Update exposing (Msg(..))
 import Keyboard
@@ -49,6 +49,9 @@ view model =
                 [ let
                     sendSvar =
                         Svar model.oppgave model.skrevet
+                    oppgave =
+                        Element.text (x ++ " * " ++ y ++ " = ")
+
                   in
                     Element.column
                         oppgaveUtseende
@@ -56,13 +59,14 @@ view model =
                          , Element.el [] (Element.text "Svar på oppgaven")
                          , Element.row
                             []
-                            [ Element.el [] (Element.text (x ++ " * " ++ y ++ " = "))
+                            [ Element.el [] oppgave
                             , Input.text
-                                [ Element.htmlAttribute <| id "svar"
+                                [ htmlAttribute <| id "svar"
                                 , Input.focusedOnLoad
                                 , Keyboard.onKeydown [ Keyboard.onEnter sendSvar ]
+                                , htmlAttribute <| autocomplete False
                                 ]
-                                { label = Input.labelAbove [] <| Element.text "Svar"
+                                { label = Input.labelLeft [] Element.empty
                                 , text = model.skrevet
                                 , onChange = Just Skrev
                                 , placeholder = Nothing
@@ -97,4 +101,4 @@ view model =
 
 oppgaveUtseende : List (Element.Attr decorative msg)
 oppgaveUtseende =
-    [ Background.color Color.darkBlue ]
+    [ Background.color Color.lightBlue ]
