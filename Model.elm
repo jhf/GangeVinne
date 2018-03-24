@@ -4,10 +4,18 @@ module Model exposing (..)
 
 
 type alias Model =
-    { oppgave : Oppgave
-    , regnet : List ( Oppgave, Tall, Sjekk )
-    , skrevet : String
+    { steg : Steg
     }
+
+
+type Steg
+    = SkrivNavn { navn : String }
+    | Regne
+        { navn : String
+        , oppgave : Oppgave
+        , regnet : List { oppgave : Oppgave, svar : Tall, resultat : Sjekk }
+        , skrevet : String
+        }
 
 
 type Oppgave

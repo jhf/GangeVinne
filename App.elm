@@ -18,11 +18,9 @@ main =
 
 init : ( Model, Cmd Msg )
 init =
-    ( { oppgave = Gange 0 0
-      , regnet = []
-      , skrevet = ""
+    ( { steg = SkrivNavn {navn=""}
       }
-    , lagTilfeldigOppgave
+    , Cmd.none
     )
 
 

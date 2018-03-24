@@ -13,6 +13,7 @@ import Model exposing (..)
 
 type Msg
     = Svar Oppgave String
+    | Navn
     | Skrev String
     | NyOppgave Oppgave
     | Ingenting
@@ -20,39 +21,65 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        Ingenting ->
-            ( model, Cmd.none )
-
-        NyOppgave oppgave ->
-            ( { model | oppgave = oppgave }, Cmd.none )
-
-        Skrev noe ->
-            ( { model | skrevet = noe }, Cmd.none )
-
-        Svar ((Gange a b) as oppgave) skrevet ->
-            case toInt skrevet of
-                Err _ ->
-                    ( model, Cmd.none )
-
-                Ok svar ->
+    case model.steg of
+        SkrivNavn { navn } ->
+            case msg of
+                Skrev noe ->
+                    ( { model | steg = SkrivNavn { navn = noe } }, Cmd.none )
+                Navn ->
                     let
-                        resultat =
-                            if svar == a * b then
-                                Riktig
-                            else
-                                Galt
-
-                        gjort =
-                            ( oppgave, svar, resultat )
-
-                        nyModel =
-                            { model
-                                | regnet = gjort :: model.regnet
-                                , skrevet = ""
+                        info =
+                            { navn = navn
+                            , oppgave = Gange 0 0
+                            , regnet = []
+                            , skrevet = ""
                             }
                     in
-                        ( nyModel, Cmd.batch [ lagTilfeldigOppgave, hoppTilSkriving ] )
+                    ( {model | steg = Regne info}
+                    , lagTilfeldigOppgave
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
+
+        Regne info ->
+            case msg of
+                Ingenting ->
+                    ( model, Cmd.none )
+
+                Navn ->
+                    ( model, Cmd.none )
+
+                NyOppgave oppgave ->
+                    ( { model | steg = Regne { info | oppgave = oppgave } }, Cmd.none )
+
+                Skrev noe ->
+                    ( { model | steg = Regne { info | skrevet = noe } }, Cmd.none )
+
+                Svar ((Gange a b) as oppgave) skrevet ->
+                    case toInt skrevet of
+                        Err _ ->
+                            ( { model | steg = Regne { info | skrevet = "" } }, Cmd.none )
+
+                        Ok svar ->
+                            let
+                                resultat =
+                                    if svar == a * b then
+                                        Riktig
+                                    else
+                                        Galt
+
+                                gjort =
+                                    { oppgave = oppgave, svar = svar, resultat = resultat }
+
+                                nyttSteg =
+                                    Regne
+                                        { info
+                                            | regnet = gjort :: info.regnet
+                                            , skrevet = ""
+                                        }
+                            in
+                                ( { model | steg = nyttSteg }, Cmd.batch [ lagTilfeldigOppgave, hoppTilSkriving ] )
 
 
 hoppTilSkriving : Cmd Msg
@@ -67,9 +94,9 @@ lagTilfeldigOppgave =
         lagOppgave ( a, b ) =
             NyOppgave <| Gange a b
     in
-        Random.generate lagOppgave randomPoint
+        Random.generate lagOppgave toTilfeldigeTall
 
 
-randomPoint : Random.Generator ( Int, Int )
-randomPoint =
+toTilfeldigeTall : Random.Generator ( Int, Int )
+toTilfeldigeTall =
     Random.pair (Random.int 0 10) (Random.int 0 10)
