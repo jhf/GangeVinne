@@ -7,6 +7,7 @@ import Dom
 import Task
 import Model exposing (..)
 
+
 -- UPDATE
 
 
@@ -15,7 +16,6 @@ type Msg
     | Skrev String
     | NyOppgave Oppgave
     | Ingenting
-
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -68,6 +68,7 @@ lagTilfeldigOppgave =
             NyOppgave <| Gange a b
     in
         Random.generate lagOppgave randomPoint
+
 
 randomPoint : Random.Generator ( Int, Int )
 randomPoint =

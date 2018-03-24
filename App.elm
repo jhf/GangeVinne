@@ -2,7 +2,7 @@ module Main exposing (..)
 
 import Html exposing (Html)
 import Model exposing (..)
-import Update exposing (update, Msg,lagTilfeldigOppgave)
+import Update exposing (update, Msg, lagTilfeldigOppgave)
 import View exposing (view)
 
 
@@ -29,6 +29,3 @@ init =
 subscriptions : a -> Sub Msg
 subscriptions model =
     Sub.none
-
-
-
