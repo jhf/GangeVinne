@@ -136,28 +136,90 @@ viewRegne info =
 viewRegnet : List Gjort -> Element Msg
 viewRegnet regnet =
     let
-        visRegnet gjort =
+        visFørste gjort =
             let
-                svar : Element msg
-                svar =
-                    let
-                        tall =
-                            toString gjort.svar
-                    in
-                        case gjort.resultat of
-                            Riktig ->
-                                Element.el
-                                    [ Background.color Color.lightGreen ]
-                                    (Element.text tall)
+                tall =
+                    case gjort.oppgave of
+                        Gange a b ->
+                            a
 
-                            Galt ->
-                                Element.el
-                                    [ Background.color Color.lightRed ]
-                                    (Element.text tall)
+                        Pluss a b ->
+                            a
+
+                        Minus a b ->
+                            a
             in
-            Element.row [] [ visOppgave gjort.oppgave, svar ]
+                el [ Font.alignRight ] <| text <| toString tall
+
+        visOperator gjort =
+            let
+                operator =
+                    case gjort.oppgave of
+                        Gange _ _ ->
+                            "*"
+
+                        Pluss _ _ ->
+                            "+"
+
+                        Minus _ _ ->
+                            "-"
+            in
+                el [ Font.center ] <| text <| operator
+
+        visAndre gjort =
+            let
+                tall =
+                    case gjort.oppgave of
+                        Gange a b ->
+                            b
+
+                        Pluss a b ->
+                            b
+
+                        Minus a b ->
+                            b
+            in
+                el [ Font.alignRight ] <| text <| toString tall
+
+        erLik gjort =
+            case gjort.resultat of
+                Riktig ->
+                    el [ Font.center, Background.color Color.green ] <| text "="
+
+                Galt ->
+                    el [ Font.center, Background.color Color.red ] <| text "≠"
+
+        visSvar gjort =
+            el [ Font.alignRight ] <| text <| toString gjort.svar
+
+        columns : List (Column Gjort Msg)
+        columns =
+            [ { header = empty
+              , view = visFørste
+              }
+            , { header = empty
+              , view = visOperator
+              }
+            , { header = empty
+              , view = visAndre
+              }
+            , { header = empty
+              , view = erLik
+              }
+            , { header = empty
+              , view = visSvar
+              }
+            ]
     in
-    Element.column hovedBoksStil <| List.map visRegnet regnet
+        Element.table
+            (hovedBoksStil
+                ++ [ padding 5
+                   , spacing 5
+                   ]
+            )
+            { data = regnet
+            , columns = columns
+            }
 
 
 visOppgave : Oppgave -> Element msg
