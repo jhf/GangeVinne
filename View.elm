@@ -39,11 +39,7 @@ view model =
 viewSkrivNavn : String -> Element Msg
 viewSkrivNavn navn =
     Element.column
-        [ Border.width 2
-        , Border.rounded 5
-        , Element.padding 10
-        , Element.spacing 5
-        ]
+        hovedBoksStil
         [ Element.el
             [ padding 10
             , centerX
@@ -79,6 +75,16 @@ viewSkrivNavn navn =
         ]
 
 
+hovedBoksStil : List (Attribute msg)
+hovedBoksStil =
+    [ Border.width 2
+    , Border.rounded 5
+    , Element.padding 10
+    , Element.spacing 5
+    , Element.height Element.shrink
+    ]
+
+
 knappeStil : List (Attribute msg)
 knappeStil =
     [ Border.color Color.lightBlue
@@ -99,15 +105,11 @@ viewRegne info =
         Element.row
             [ Element.spacing 10 ]
             [ Element.column
-                [ Element.centerX
-                , Element.centerY
-                , Element.height Element.shrink
-                , Background.color Color.lightBlue
-                ]
+                hovedBoksStil
                 [ Element.el [] (Element.text <| "Hei " ++ info.navn)
                 , Element.el [] (Element.text "Svar på oppgaven")
                 , Element.row
-                    []
+                    [ spacing 10 ]
                     [ Element.el [] <| visOppgave info.oppgave
                     , Input.text
                         [ htmlAttribute <| id "svar"
@@ -121,9 +123,9 @@ viewRegne info =
                         , placeholder = Nothing
                         }
                     , Input.button
-                        ( knappeStil ++ [ Events.onClick sendSvar ])
+                        (knappeStil ++ [ Events.onClick sendSvar ])
                         { onPress = Just sendSvar
-                        , label = Element.text "Sjekk svaret!"
+                        , label = Element.text "Sjekk!"
                         }
                     ]
                 ]
@@ -181,4 +183,4 @@ visOppgave oppgave =
         regneStykke =
             x ++ " " ++ op ++ " " ++ y
     in
-        Element.text <| regneStykke ++ " = "
+        Element.text <| regneStykke ++ " ="
