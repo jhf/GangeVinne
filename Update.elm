@@ -124,13 +124,28 @@ lagTilfeldigOppgave oppgaveType =
 
         PlussOgMinus ->
             let
+                minste =
+                    0
+
+                største =
+                    20
+
                 lageTilfeldigeTall =
-                    Random.map3 lagOppgave Random.bool (Random.int 0 20) (Random.int 0 20)
+                    Random.map3 lagOppgave Random.bool (Random.int minste største) (Random.int minste største)
+
+                lagMinus a b =
+                    if a > b then
+                        Minus a b
+                    else
+                        Minus b a
 
                 lagOppgave pluss a b =
                     if pluss then
-                        Pluss a b
+                        if  a + b > største then
+                            lagMinus a b
+                        else
+                            Pluss a b
                     else
-                        Minus a b
+                        lagMinus a b
             in
                 Random.generate NyOppgave lageTilfeldigeTall

@@ -86,6 +86,7 @@ knappeStil =
     , Border.rounded 5
     , Border.width 2
     , Background.color Color.white
+    , padding 5
     ]
 
 
@@ -119,7 +120,8 @@ viewRegne info =
                         , onChange = Just Skrev
                         , placeholder = Nothing
                         }
-                    , Input.button [ Events.onClick sendSvar ]
+                    , Input.button
+                        ( knappeStil ++ [ Events.onClick sendSvar ])
                         { onPress = Just sendSvar
                         , label = Element.text "Sjekk svaret!"
                         }
