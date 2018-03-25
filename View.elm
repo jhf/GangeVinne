@@ -155,9 +155,9 @@ viewRegnet regnet =
                                     [ Background.color Color.lightRed ]
                                     (Element.text tall)
             in
-                Element.row [] [ visOppgave gjort.oppgave, svar ]
+            Element.row [] [ visOppgave gjort.oppgave, svar ]
     in
-        Element.column [] <| List.map visRegnet regnet
+    Element.column hovedBoksStil <| List.map visRegnet regnet
 
 
 visOppgave : Oppgave -> Element msg
