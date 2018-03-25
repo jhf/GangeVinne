@@ -38,7 +38,7 @@ update msg model =
                             }
                     in
                         ( { model | steg = Regne info }
-                        , lagTilfeldigOppgave
+                        , lagTilfeldigOppgave info.oppgaveType
                         )
 
                 _ ->
@@ -72,11 +72,13 @@ update msg model =
                                                 Riktig
                                             else
                                                 Galt
+
                                         Pluss a b ->
                                             if svar == a + b then
                                                 Riktig
                                             else
                                                 Galt
+
                                         Minus a b ->
                                             if svar == a - b then
                                                 Riktig
@@ -93,7 +95,12 @@ update msg model =
                                             , skrevet = ""
                                         }
                             in
-                                ( { model | steg = nyttSteg }, Cmd.batch [ lagTilfeldigOppgave, hoppTilSkriving ] )
+                                ( { model | steg = nyttSteg }
+                                , Cmd.batch
+                                    [ lagTilfeldigOppgave info.oppgaveType
+                                    , hoppTilSkriving
+                                    ]
+                                )
 
 
 hoppTilSkriving : Cmd Msg
@@ -102,15 +109,28 @@ hoppTilSkriving =
         |> Task.attempt (\_ -> Ingenting)
 
 
-lagTilfeldigOppgave : Cmd Msg
-lagTilfeldigOppgave =
-    let
-        lagOppgave ( a, b ) =
-            NyOppgave <| Gange a b
-    in
-        Random.generate lagOppgave toTilfeldigeTall
+lagTilfeldigOppgave : OppgaveType -> Cmd Msg
+lagTilfeldigOppgave oppgaveType =
+    case oppgaveType of
+        Ganging ->
+            let
+                toTilfeldigeTall =
+                    Random.pair (Random.int 0 10) (Random.int 0 10)
 
+                lagOppgave ( a, b ) =
+                    NyOppgave <| Gange a b
+            in
+                Random.generate lagOppgave toTilfeldigeTall
 
-toTilfeldigeTall : Random.Generator ( Int, Int )
-toTilfeldigeTall =
-    Random.pair (Random.int 0 10) (Random.int 0 10)
+        PlussOgMinus ->
+            let
+                lageTilfeldigeTall =
+                    Random.map3 lagOppgave Random.bool (Random.int 0 20) (Random.int 0 20)
+
+                lagOppgave pluss a b =
+                    if pluss then
+                        Pluss a b
+                    else
+                        Minus a b
+            in
+                Random.generate NyOppgave lageTilfeldigeTall
