@@ -2,7 +2,7 @@ module View exposing (..)
 
 import List
 import Color
-import Element exposing (Element, htmlAttribute)
+import Element exposing (..)
 import Element.Events as Events
 import Element.Font as Font
 import Element.Input as Input
@@ -39,27 +39,54 @@ view model =
 viewSkrivNavn : String -> Element Msg
 viewSkrivNavn navn =
     Element.column
-        [ Background.color Color.lightGreen ]
-        [ Element.el [] (Element.text "Velkommen til GangeVinne!")
+        [ Border.width 2
+        , Border.rounded 5
+        , Element.padding 10
+        , Element.spacing 5
+        ]
+        [ Element.el
+            [ padding 10
+            , centerX
+            ]
+            (Element.text "Velkommen til GangeVinne!")
         , Element.el [] (Element.text "Hva heter du?")
-        , Element.row []
-            [ Input.text
-                [ htmlAttribute <| id "navn"
-                , Input.focusedOnLoad
-                , Keyboard.onKeydown [ Keyboard.onEnter Navn ]
-                , htmlAttribute <| autocomplete False
-                ]
-                { label = Input.labelLeft [] <| Element.text "Ditt navn:"
-                , text = navn
-                , onChange = Just Skrev
-                , placeholder = Nothing
+        , Input.text
+            [ htmlAttribute <| id "navn"
+            , Input.focusedOnLoad
+            , htmlAttribute <| autocomplete False
+            ]
+            { label = Input.labelLeft [] <| Element.text "Ditt navn:"
+            , text = navn
+            , onChange = Just Skrev
+            , placeholder = Nothing
+            }
+        , Element.el [] (Element.text "Velg hva du vil gjøre:")
+        , Element.row
+            [ Element.padding 10
+            , Element.spacing 20
+            ]
+            [ Input.button
+                (knappeStil ++ [ Events.onClick <| Velg Ganging, width fill ])
+                { onPress = Just <| Velg Ganging
+                , label = Element.text "Ganging"
                 }
-            , Input.button [ Events.onClick Navn ]
-                { onPress = Just Navn
-                , label = Element.text "Neste"
+            , Input.button
+                (knappeStil ++ [ Events.onClick <| Velg PlussOgMinus, width fill ])
+                { onPress = Just <| Velg PlussOgMinus
+                , label = Element.text "Pluss og minus"
                 }
             ]
         ]
+
+
+knappeStil : List (Attribute msg)
+knappeStil =
+    [ Border.color Color.lightBlue
+    , Border.solid
+    , Border.rounded 5
+    , Border.width 2
+    , Background.color Color.white
+    ]
 
 
 viewRegne : RegneInfo -> Element Msg
@@ -132,14 +159,17 @@ viewRegnet regnet =
 visOppgave : Oppgave -> Element msg
 visOppgave oppgave =
     let
-        (a,op,b) =
+        ( a, op, b ) =
             case oppgave of
                 Gange a b ->
-                    (a, "*" ,b)
+                    ( a, "*", b )
+
                 Pluss a b ->
-                    (a, "+" ,b)
+                    ( a, "+", b )
+
                 Minus a b ->
-                    (a, "-" ,b)
+                    ( a, "-", b )
+
         x =
             toString a
 
@@ -149,5 +179,4 @@ visOppgave oppgave =
         regneStykke =
             x ++ " " ++ op ++ " " ++ y
     in
-    Element.text <| regneStykke ++ " = "
-
+        Element.text <| regneStykke ++ " = "

@@ -13,7 +13,7 @@ import Model exposing (..)
 
 type Msg
     = Svar Oppgave String
-    | Navn
+    | Velg OppgaveType
     | Skrev String
     | NyOppgave Oppgave
     | Ingenting
@@ -27,14 +27,14 @@ update msg model =
                 Skrev noe ->
                     ( { model | steg = SkrivNavn { navn = noe } }, Cmd.none )
 
-                Navn ->
+                Velg oppgaveType ->
                     let
                         info =
                             { navn = navn
                             , oppgave = Gange 0 0
                             , regnet = []
                             , skrevet = ""
-                            , oppgaveType = Ganging
+                            , oppgaveType = oppgaveType
                             }
                     in
                         ( { model | steg = Regne info }
@@ -49,7 +49,7 @@ update msg model =
                 Ingenting ->
                     ( model, Cmd.none )
 
-                Navn ->
+                Velg _ ->
                     ( model, Cmd.none )
 
                 NyOppgave oppgave ->
