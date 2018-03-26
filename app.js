@@ -18583,23 +18583,37 @@ var _jhf$gangevinne$Keyboard$onKeydown = function (_p1) {
 var _jhf$gangevinne$Model$Model = function (a) {
 	return {steg: a};
 };
+var _jhf$gangevinne$Model$RegneInfo = F5(
+	function (a, b, c, d, e) {
+		return {navn: a, oppgave: b, regnet: c, skrevet: d, oppgaveType: e};
+	});
+var _jhf$gangevinne$Model$Gjort = F3(
+	function (a, b, c) {
+		return {oppgave: a, svar: b, resultat: c};
+	});
 var _jhf$gangevinne$Model$Regne = function (a) {
 	return {ctor: 'Regne', _0: a};
 };
 var _jhf$gangevinne$Model$SkrivNavn = function (a) {
 	return {ctor: 'SkrivNavn', _0: a};
 };
+var _jhf$gangevinne$Model$Minus = F2(
+	function (a, b) {
+		return {ctor: 'Minus', _0: a, _1: b};
+	});
+var _jhf$gangevinne$Model$Pluss = F2(
+	function (a, b) {
+		return {ctor: 'Pluss', _0: a, _1: b};
+	});
 var _jhf$gangevinne$Model$Gange = F2(
 	function (a, b) {
 		return {ctor: 'Gange', _0: a, _1: b};
 	});
 var _jhf$gangevinne$Model$Galt = {ctor: 'Galt'};
 var _jhf$gangevinne$Model$Riktig = {ctor: 'Riktig'};
+var _jhf$gangevinne$Model$PlussOgMinus = {ctor: 'PlussOgMinus'};
+var _jhf$gangevinne$Model$Ganging = {ctor: 'Ganging'};
 
-var _jhf$gangevinne$Update$toTilfeldigeTall = A2(
-	_elm_lang$core$Random$pair,
-	A2(_elm_lang$core$Random$int, 0, 10),
-	A2(_elm_lang$core$Random$int, 0, 10));
 var _jhf$gangevinne$Update$Ingenting = {ctor: 'Ingenting'};
 var _jhf$gangevinne$Update$hoppTilSkriving = A2(
 	_elm_lang$core$Task$attempt,
@@ -18610,20 +18624,45 @@ var _jhf$gangevinne$Update$hoppTilSkriving = A2(
 var _jhf$gangevinne$Update$NyOppgave = function (a) {
 	return {ctor: 'NyOppgave', _0: a};
 };
-var _jhf$gangevinne$Update$lagTilfeldigOppgave = function () {
-	var lagOppgave = function (_p1) {
-		var _p2 = _p1;
-		return _jhf$gangevinne$Update$NyOppgave(
-			A2(_jhf$gangevinne$Model$Gange, _p2._0, _p2._1));
-	};
-	return A2(_elm_lang$core$Random$generate, lagOppgave, _jhf$gangevinne$Update$toTilfeldigeTall);
-}();
+var _jhf$gangevinne$Update$lagTilfeldigOppgave = function (oppgaveType) {
+	var _p1 = oppgaveType;
+	if (_p1.ctor === 'Ganging') {
+		var lagOppgave = function (_p2) {
+			var _p3 = _p2;
+			return _jhf$gangevinne$Update$NyOppgave(
+				A2(_jhf$gangevinne$Model$Gange, _p3._0, _p3._1));
+		};
+		var toTilfeldigeTall = A2(
+			_elm_lang$core$Random$pair,
+			A2(_elm_lang$core$Random$int, 0, 10),
+			A2(_elm_lang$core$Random$int, 0, 10));
+		return A2(_elm_lang$core$Random$generate, lagOppgave, toTilfeldigeTall);
+	} else {
+		var lagMinus = F2(
+			function (a, b) {
+				return (_elm_lang$core$Native_Utils.cmp(a, b) > 0) ? A2(_jhf$gangevinne$Model$Minus, a, b) : A2(_jhf$gangevinne$Model$Minus, b, a);
+			});
+		var største = 20;
+		var lagOppgave = F3(
+			function (pluss, a, b) {
+				return pluss ? ((_elm_lang$core$Native_Utils.cmp(a + b, største) > 0) ? A2(lagMinus, a, b) : A2(_jhf$gangevinne$Model$Pluss, a, b)) : A2(lagMinus, a, b);
+			});
+		var minste = 0;
+		var lageTilfeldigeTall = A4(
+			_elm_lang$core$Random$map3,
+			lagOppgave,
+			_elm_lang$core$Random$bool,
+			A2(_elm_lang$core$Random$int, minste, største),
+			A2(_elm_lang$core$Random$int, minste, største));
+		return A2(_elm_lang$core$Random$generate, _jhf$gangevinne$Update$NyOppgave, lageTilfeldigeTall);
+	}
+};
 var _jhf$gangevinne$Update$update = F2(
 	function (msg, model) {
-		var _p3 = model.steg;
-		if (_p3.ctor === 'SkrivNavn') {
-			var _p4 = msg;
-			switch (_p4.ctor) {
+		var _p4 = model.steg;
+		if (_p4.ctor === 'SkrivNavn') {
+			var _p5 = msg;
+			switch (_p5.ctor) {
 				case 'Skrev':
 					return {
 						ctor: '_Tuple2',
@@ -18631,16 +18670,17 @@ var _jhf$gangevinne$Update$update = F2(
 							model,
 							{
 								steg: _jhf$gangevinne$Model$SkrivNavn(
-									{navn: _p4._0})
+									{navn: _p5._0})
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
-				case 'Navn':
+				case 'Velg':
 					var info = {
-						navn: _p3._0.navn,
+						navn: _p4._0.navn,
 						oppgave: A2(_jhf$gangevinne$Model$Gange, 0, 0),
 						regnet: {ctor: '[]'},
-						skrevet: ''
+						skrevet: '',
+						oppgaveType: _p5._0
 					};
 					return {
 						ctor: '_Tuple2',
@@ -18649,18 +18689,18 @@ var _jhf$gangevinne$Update$update = F2(
 							{
 								steg: _jhf$gangevinne$Model$Regne(info)
 							}),
-						_1: _jhf$gangevinne$Update$lagTilfeldigOppgave
+						_1: _jhf$gangevinne$Update$lagTilfeldigOppgave(info.oppgaveType)
 					};
 				default:
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			}
 		} else {
-			var _p8 = _p3._0;
-			var _p5 = msg;
-			switch (_p5.ctor) {
+			var _p11 = _p4._0;
+			var _p6 = msg;
+			switch (_p6.ctor) {
 				case 'Ingenting':
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				case 'Navn':
+				case 'Velg':
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				case 'NyOppgave':
 					return {
@@ -18670,8 +18710,8 @@ var _jhf$gangevinne$Update$update = F2(
 							{
 								steg: _jhf$gangevinne$Model$Regne(
 									_elm_lang$core$Native_Utils.update(
-										_p8,
-										{oppgave: _p5._0}))
+										_p11,
+										{oppgave: _p6._0}))
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
@@ -18683,14 +18723,15 @@ var _jhf$gangevinne$Update$update = F2(
 							{
 								steg: _jhf$gangevinne$Model$Regne(
 									_elm_lang$core$Native_Utils.update(
-										_p8,
-										{skrevet: _p5._0}))
+										_p11,
+										{skrevet: _p6._0}))
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				default:
-					var _p6 = _elm_lang$core$String$toInt(_p5._1);
-					if (_p6.ctor === 'Err') {
+					var _p10 = _p6._0;
+					var _p7 = _elm_lang$core$String$toInt(_p6._1);
+					if (_p7.ctor === 'Err') {
 						return {
 							ctor: '_Tuple2',
 							_0: _elm_lang$core$Native_Utils.update(
@@ -18698,20 +18739,30 @@ var _jhf$gangevinne$Update$update = F2(
 								{
 									steg: _jhf$gangevinne$Model$Regne(
 										_elm_lang$core$Native_Utils.update(
-											_p8,
+											_p11,
 											{skrevet: ''}))
 								}),
 							_1: _elm_lang$core$Platform_Cmd$none
 						};
 					} else {
-						var _p7 = _p6._0;
-						var resultat = _elm_lang$core$Native_Utils.eq(_p7, _p5._0._0 * _p5._0._1) ? _jhf$gangevinne$Model$Riktig : _jhf$gangevinne$Model$Galt;
-						var gjort = {oppgave: _p5._0, svar: _p7, resultat: resultat};
+						var _p9 = _p7._0;
+						var resultat = function () {
+							var _p8 = _p10;
+							switch (_p8.ctor) {
+								case 'Gange':
+									return _elm_lang$core$Native_Utils.eq(_p9, _p8._0 * _p8._1) ? _jhf$gangevinne$Model$Riktig : _jhf$gangevinne$Model$Galt;
+								case 'Pluss':
+									return _elm_lang$core$Native_Utils.eq(_p9, _p8._0 + _p8._1) ? _jhf$gangevinne$Model$Riktig : _jhf$gangevinne$Model$Galt;
+								default:
+									return _elm_lang$core$Native_Utils.eq(_p9, _p8._0 - _p8._1) ? _jhf$gangevinne$Model$Riktig : _jhf$gangevinne$Model$Galt;
+							}
+						}();
+						var gjort = {oppgave: _p10, svar: _p9, resultat: resultat};
 						var nyttSteg = _jhf$gangevinne$Model$Regne(
 							_elm_lang$core$Native_Utils.update(
-								_p8,
+								_p11,
 								{
-									regnet: {ctor: '::', _0: gjort, _1: _p8.regnet},
+									regnet: {ctor: '::', _0: gjort, _1: _p11.regnet},
 									skrevet: ''
 								}));
 						return {
@@ -18722,7 +18773,7 @@ var _jhf$gangevinne$Update$update = F2(
 							_1: _elm_lang$core$Platform_Cmd$batch(
 								{
 									ctor: '::',
-									_0: _jhf$gangevinne$Update$lagTilfeldigOppgave,
+									_0: _jhf$gangevinne$Update$lagTilfeldigOppgave(_p11.oppgaveType),
 									_1: {
 										ctor: '::',
 										_0: _jhf$gangevinne$Update$hoppTilSkriving,
@@ -18737,7 +18788,9 @@ var _jhf$gangevinne$Update$update = F2(
 var _jhf$gangevinne$Update$Skrev = function (a) {
 	return {ctor: 'Skrev', _0: a};
 };
-var _jhf$gangevinne$Update$Navn = {ctor: 'Navn'};
+var _jhf$gangevinne$Update$Velg = function (a) {
+	return {ctor: 'Velg', _0: a};
+};
 var _jhf$gangevinne$Update$Svar = F2(
 	function (a, b) {
 		return {ctor: 'Svar', _0: a, _1: b};
@@ -21923,141 +21976,445 @@ var _mdgriffith$stylish_elephants$Element_Keyed$el = F2(
 				}));
 	});
 
-var _jhf$gangevinne$View$oppgaveUtseende = {
-	ctor: '::',
-	_0: _mdgriffith$stylish_elephants$Element_Background$color(_elm_lang$core$Color$lightBlue),
-	_1: {ctor: '[]'}
-};
-var _jhf$gangevinne$View$viewRegne = function (info) {
-	var _p0 = info.oppgave;
+var _jhf$gangevinne$View$visOppgave = function (oppgave) {
+	var _p0 = function () {
+		var _p1 = oppgave;
+		switch (_p1.ctor) {
+			case 'Gange':
+				return {ctor: '_Tuple3', _0: _p1._0, _1: '*', _2: _p1._1};
+			case 'Pluss':
+				return {ctor: '_Tuple3', _0: _p1._0, _1: '+', _2: _p1._1};
+			default:
+				return {ctor: '_Tuple3', _0: _p1._0, _1: '-', _2: _p1._1};
+		}
+	}();
 	var a = _p0._0;
-	var b = _p0._1;
+	var op = _p0._1;
+	var b = _p0._2;
 	var x = _elm_lang$core$Basics$toString(a);
 	var y = _elm_lang$core$Basics$toString(b);
-	var oppgave = _mdgriffith$stylish_elephants$Element$text(
+	var regneStykke = A2(
+		_elm_lang$core$Basics_ops['++'],
+		x,
 		A2(
 			_elm_lang$core$Basics_ops['++'],
-			x,
+			' ',
 			A2(
 				_elm_lang$core$Basics_ops['++'],
-				' * ',
-				A2(_elm_lang$core$Basics_ops['++'], y, ' = '))));
-	var sendSvar = A2(_jhf$gangevinne$Update$Svar, info.oppgave, info.skrevet);
-	return A2(
-		_mdgriffith$stylish_elephants$Element$column,
-		_jhf$gangevinne$View$oppgaveUtseende,
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			{
+				op,
+				A2(_elm_lang$core$Basics_ops['++'], ' ', y))));
+	return _mdgriffith$stylish_elephants$Element$text(
+		A2(_elm_lang$core$Basics_ops['++'], regneStykke, ' ='));
+};
+var _jhf$gangevinne$View$knappeStil = {
+	ctor: '::',
+	_0: _mdgriffith$stylish_elephants$Element_Border$color(_elm_lang$core$Color$lightBlue),
+	_1: {
+		ctor: '::',
+		_0: _mdgriffith$stylish_elephants$Element_Border$solid,
+		_1: {
+			ctor: '::',
+			_0: _mdgriffith$stylish_elephants$Element_Border$rounded(5),
+			_1: {
 				ctor: '::',
-				_0: A2(
-					_mdgriffith$stylish_elephants$Element$el,
-					{ctor: '[]'},
-					_mdgriffith$stylish_elephants$Element$text(
-						A2(_elm_lang$core$Basics_ops['++'], 'Hei ', info.navn))),
+				_0: _mdgriffith$stylish_elephants$Element_Border$width(2),
 				_1: {
 					ctor: '::',
-					_0: A2(
-						_mdgriffith$stylish_elephants$Element$el,
-						{ctor: '[]'},
-						_mdgriffith$stylish_elephants$Element$text('Svar på oppgaven')),
+					_0: _mdgriffith$stylish_elephants$Element_Background$color(_elm_lang$core$Color$white),
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_mdgriffith$stylish_elephants$Element$row,
-							{ctor: '[]'},
-							{
-								ctor: '::',
-								_0: A2(
-									_mdgriffith$stylish_elephants$Element$el,
-									{ctor: '[]'},
-									oppgave),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_mdgriffith$stylish_elephants$Element_Input$text,
-										{
-											ctor: '::',
-											_0: _mdgriffith$stylish_elephants$Element$htmlAttribute(
-												_elm_lang$html$Html_Attributes$id('svar')),
-											_1: {
-												ctor: '::',
-												_0: _mdgriffith$stylish_elephants$Element_Input$focusedOnLoad,
-												_1: {
-													ctor: '::',
-													_0: _jhf$gangevinne$Keyboard$onKeydown(
-														{
-															ctor: '::',
-															_0: _jhf$gangevinne$Keyboard$onEnter(sendSvar),
-															_1: {ctor: '[]'}
-														}),
-													_1: {
-														ctor: '::',
-														_0: _mdgriffith$stylish_elephants$Element$htmlAttribute(
-															_elm_lang$html$Html_Attributes$autocomplete(false)),
-														_1: {ctor: '[]'}
-													}
-												}
-											}
-										},
-										{
-											label: A2(
-												_mdgriffith$stylish_elephants$Element_Input$labelLeft,
-												{ctor: '[]'},
-												_mdgriffith$stylish_elephants$Element$empty),
-											text: info.skrevet,
-											onChange: _elm_lang$core$Maybe$Just(_jhf$gangevinne$Update$Skrev),
-											placeholder: _elm_lang$core$Maybe$Nothing
-										}),
-									_1: {
-										ctor: '::',
-										_0: A2(
-											_mdgriffith$stylish_elephants$Element_Input$button,
-											{
-												ctor: '::',
-												_0: _mdgriffith$stylish_elephants$Element_Events$onClick(sendSvar),
-												_1: {ctor: '[]'}
-											},
-											{
-												onPress: _elm_lang$core$Maybe$Just(sendSvar),
-												label: _mdgriffith$stylish_elephants$Element$text('Sjekk svaret!')
-											}),
-										_1: {ctor: '[]'}
-									}
-								}
-							}),
+						_0: _mdgriffith$stylish_elephants$Element$padding(5),
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		}
+	}
+};
+var _jhf$gangevinne$View$hovedBoksStil = {
+	ctor: '::',
+	_0: _mdgriffith$stylish_elephants$Element_Border$width(2),
+	_1: {
+		ctor: '::',
+		_0: _mdgriffith$stylish_elephants$Element_Border$rounded(5),
+		_1: {
+			ctor: '::',
+			_0: _mdgriffith$stylish_elephants$Element$padding(10),
+			_1: {
+				ctor: '::',
+				_0: _mdgriffith$stylish_elephants$Element$spacing(5),
+				_1: {
+					ctor: '::',
+					_0: _mdgriffith$stylish_elephants$Element$height(_mdgriffith$stylish_elephants$Element$shrink),
+					_1: {ctor: '[]'}
+				}
+			}
+		}
+	}
+};
+var _jhf$gangevinne$View$visRegnet = function (regnet) {
+	var oppsummering = function () {
+		var tell = F2(
+			function (gjort, _p2) {
+				var _p3 = _p2;
+				var _p6 = _p3._0;
+				var _p5 = _p3._1;
+				var _p4 = gjort.resultat;
+				if (_p4.ctor === 'Riktig') {
+					return {ctor: '_Tuple2', _0: _p6 + 1, _1: _p5};
+				} else {
+					return {ctor: '_Tuple2', _0: _p6, _1: _p5 + 1};
+				}
+			});
+		var _p7 = A3(
+			_elm_lang$core$List$foldl,
+			tell,
+			{ctor: '_Tuple2', _0: 0, _1: 0},
+			regnet);
+		var riktige = _p7._0;
+		var gale = _p7._1;
+		return A2(
+			_mdgriffith$stylish_elephants$Element$row,
+			{
+				ctor: '::',
+				_0: _mdgriffith$stylish_elephants$Element$padding(5),
+				_1: {
+					ctor: '::',
+					_0: _mdgriffith$stylish_elephants$Element$spacing(10),
+					_1: {
+						ctor: '::',
+						_0: _mdgriffith$stylish_elephants$Element$centerX,
 						_1: {ctor: '[]'}
 					}
 				}
 			},
-			function () {
-				var visRegnet = function (_p1) {
-					var _p2 = _p1;
-					var beskjed = function () {
-						var _p3 = _p2.resultat;
-						if (_p3.ctor === 'Riktig') {
-							return 'Riktig :-)';
-						} else {
-							return 'Galt :-(';
+			{
+				ctor: '::',
+				_0: A2(
+					_mdgriffith$stylish_elephants$Element$el,
+					{
+						ctor: '::',
+						_0: _mdgriffith$stylish_elephants$Element$padding(5),
+						_1: {
+							ctor: '::',
+							_0: _mdgriffith$stylish_elephants$Element_Border$color(_elm_lang$core$Color$green),
+							_1: {
+								ctor: '::',
+								_0: _mdgriffith$stylish_elephants$Element_Border$width(5),
+								_1: {ctor: '[]'}
+							}
 						}
-					}();
-					return A2(
+					},
+					_mdgriffith$stylish_elephants$Element$text(
+						_elm_lang$core$Basics$toString(riktige))),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_mdgriffith$stylish_elephants$Element$el,
+						{
+							ctor: '::',
+							_0: _mdgriffith$stylish_elephants$Element$padding(5),
+							_1: {
+								ctor: '::',
+								_0: _mdgriffith$stylish_elephants$Element_Border$color(_elm_lang$core$Color$red),
+								_1: {
+									ctor: '::',
+									_0: _mdgriffith$stylish_elephants$Element_Border$width(5),
+									_1: {ctor: '[]'}
+								}
+							}
+						},
+						_mdgriffith$stylish_elephants$Element$text(
+							_elm_lang$core$Basics$toString(gale))),
+					_1: {ctor: '[]'}
+				}
+			});
+	}();
+	var visSvar = function (gjort) {
+		return A2(
+			_mdgriffith$stylish_elephants$Element$el,
+			{
+				ctor: '::',
+				_0: _mdgriffith$stylish_elephants$Element_Font$alignRight,
+				_1: {ctor: '[]'}
+			},
+			_mdgriffith$stylish_elephants$Element$text(
+				_elm_lang$core$Basics$toString(gjort.svar)));
+	};
+	var erLik = function (gjort) {
+		var _p8 = gjort.resultat;
+		if (_p8.ctor === 'Riktig') {
+			return A2(
+				_mdgriffith$stylish_elephants$Element$el,
+				{
+					ctor: '::',
+					_0: _mdgriffith$stylish_elephants$Element_Font$center,
+					_1: {
+						ctor: '::',
+						_0: _mdgriffith$stylish_elephants$Element_Background$color(_elm_lang$core$Color$green),
+						_1: {ctor: '[]'}
+					}
+				},
+				_mdgriffith$stylish_elephants$Element$text('='));
+		} else {
+			return A2(
+				_mdgriffith$stylish_elephants$Element$el,
+				{
+					ctor: '::',
+					_0: _mdgriffith$stylish_elephants$Element_Font$center,
+					_1: {
+						ctor: '::',
+						_0: _mdgriffith$stylish_elephants$Element_Background$color(_elm_lang$core$Color$red),
+						_1: {ctor: '[]'}
+					}
+				},
+				_mdgriffith$stylish_elephants$Element$text('≠'));
+		}
+	};
+	var visAndre = function (gjort) {
+		var tall = function () {
+			var _p9 = gjort.oppgave;
+			switch (_p9.ctor) {
+				case 'Gange':
+					return _p9._1;
+				case 'Pluss':
+					return _p9._1;
+				default:
+					return _p9._1;
+			}
+		}();
+		return A2(
+			_mdgriffith$stylish_elephants$Element$el,
+			{
+				ctor: '::',
+				_0: _mdgriffith$stylish_elephants$Element_Font$alignRight,
+				_1: {ctor: '[]'}
+			},
+			_mdgriffith$stylish_elephants$Element$text(
+				_elm_lang$core$Basics$toString(tall)));
+	};
+	var visOperator = function (gjort) {
+		var operator = function () {
+			var _p10 = gjort.oppgave;
+			switch (_p10.ctor) {
+				case 'Gange':
+					return '*';
+				case 'Pluss':
+					return '+';
+				default:
+					return '-';
+			}
+		}();
+		return A2(
+			_mdgriffith$stylish_elephants$Element$el,
+			{
+				ctor: '::',
+				_0: _mdgriffith$stylish_elephants$Element_Font$center,
+				_1: {ctor: '[]'}
+			},
+			_mdgriffith$stylish_elephants$Element$text(operator));
+	};
+	var visFørste = function (gjort) {
+		var tall = function () {
+			var _p11 = gjort.oppgave;
+			switch (_p11.ctor) {
+				case 'Gange':
+					return _p11._0;
+				case 'Pluss':
+					return _p11._0;
+				default:
+					return _p11._0;
+			}
+		}();
+		return A2(
+			_mdgriffith$stylish_elephants$Element$el,
+			{
+				ctor: '::',
+				_0: _mdgriffith$stylish_elephants$Element_Font$alignRight,
+				_1: {ctor: '[]'}
+			},
+			_mdgriffith$stylish_elephants$Element$text(
+				_elm_lang$core$Basics$toString(tall)));
+	};
+	var columns = {
+		ctor: '::',
+		_0: {header: _mdgriffith$stylish_elephants$Element$empty, view: visFørste},
+		_1: {
+			ctor: '::',
+			_0: {header: _mdgriffith$stylish_elephants$Element$empty, view: visOperator},
+			_1: {
+				ctor: '::',
+				_0: {header: _mdgriffith$stylish_elephants$Element$empty, view: visAndre},
+				_1: {
+					ctor: '::',
+					_0: {header: _mdgriffith$stylish_elephants$Element$empty, view: erLik},
+					_1: {
+						ctor: '::',
+						_0: {header: _mdgriffith$stylish_elephants$Element$empty, view: visSvar},
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		}
+	};
+	var historikk = A2(
+		_mdgriffith$stylish_elephants$Element$table,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_jhf$gangevinne$View$hovedBoksStil,
+			{
+				ctor: '::',
+				_0: _mdgriffith$stylish_elephants$Element$padding(5),
+				_1: {
+					ctor: '::',
+					_0: _mdgriffith$stylish_elephants$Element$spacing(5),
+					_1: {ctor: '[]'}
+				}
+			}),
+		{
+			data: A2(_elm_lang$core$List$take, 5, regnet),
+			columns: columns
+		});
+	return A2(
+		_mdgriffith$stylish_elephants$Element$column,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: oppsummering,
+			_1: {
+				ctor: '::',
+				_0: historikk,
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _jhf$gangevinne$View$viewRegne = function (info) {
+	var sendSvar = A2(_jhf$gangevinne$Update$Svar, info.oppgave, info.skrevet);
+	return A2(
+		_mdgriffith$stylish_elephants$Element$row,
+		{
+			ctor: '::',
+			_0: _mdgriffith$stylish_elephants$Element$spacing(10),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_mdgriffith$stylish_elephants$Element$column,
+				_jhf$gangevinne$View$hovedBoksStil,
+				{
+					ctor: '::',
+					_0: A2(
 						_mdgriffith$stylish_elephants$Element$el,
 						{ctor: '[]'},
-						_mdgriffith$stylish_elephants$Element$text(beskjed));
-				};
-				return A2(_elm_lang$core$List$map, visRegnet, info.regnet);
-			}()));
+						_mdgriffith$stylish_elephants$Element$text(
+							A2(_elm_lang$core$Basics_ops['++'], 'Hei ', info.navn))),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_mdgriffith$stylish_elephants$Element$el,
+							{ctor: '[]'},
+							_mdgriffith$stylish_elephants$Element$text('Svar på oppgaven')),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_mdgriffith$stylish_elephants$Element$row,
+								{
+									ctor: '::',
+									_0: _mdgriffith$stylish_elephants$Element$spacing(10),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: A2(
+										_mdgriffith$stylish_elephants$Element$el,
+										{ctor: '[]'},
+										_jhf$gangevinne$View$visOppgave(info.oppgave)),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_mdgriffith$stylish_elephants$Element_Input$text,
+											{
+												ctor: '::',
+												_0: _mdgriffith$stylish_elephants$Element$htmlAttribute(
+													_elm_lang$html$Html_Attributes$id('svar')),
+												_1: {
+													ctor: '::',
+													_0: _mdgriffith$stylish_elephants$Element_Input$focusedOnLoad,
+													_1: {
+														ctor: '::',
+														_0: _jhf$gangevinne$Keyboard$onKeydown(
+															{
+																ctor: '::',
+																_0: _jhf$gangevinne$Keyboard$onEnter(sendSvar),
+																_1: {ctor: '[]'}
+															}),
+														_1: {
+															ctor: '::',
+															_0: _mdgriffith$stylish_elephants$Element$htmlAttribute(
+																_elm_lang$html$Html_Attributes$autocomplete(false)),
+															_1: {ctor: '[]'}
+														}
+													}
+												}
+											},
+											{
+												label: A2(
+													_mdgriffith$stylish_elephants$Element_Input$labelLeft,
+													{ctor: '[]'},
+													_mdgriffith$stylish_elephants$Element$empty),
+												text: info.skrevet,
+												onChange: _elm_lang$core$Maybe$Just(_jhf$gangevinne$Update$Skrev),
+												placeholder: _elm_lang$core$Maybe$Nothing
+											}),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_mdgriffith$stylish_elephants$Element_Input$button,
+												A2(
+													_elm_lang$core$Basics_ops['++'],
+													_jhf$gangevinne$View$knappeStil,
+													{
+														ctor: '::',
+														_0: _mdgriffith$stylish_elephants$Element_Events$onClick(sendSvar),
+														_1: {ctor: '[]'}
+													}),
+												{
+													onPress: _elm_lang$core$Maybe$Just(sendSvar),
+													label: _mdgriffith$stylish_elephants$Element$text('Sjekk!')
+												}),
+											_1: {ctor: '[]'}
+										}
+									}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}
+				}),
+			_1: {
+				ctor: '::',
+				_0: _jhf$gangevinne$View$visRegnet(info.regnet),
+				_1: {ctor: '[]'}
+			}
+		});
 };
 var _jhf$gangevinne$View$viewSkrivNavn = function (navn) {
 	return A2(
 		_mdgriffith$stylish_elephants$Element$column,
-		_jhf$gangevinne$View$oppgaveUtseende,
+		_jhf$gangevinne$View$hovedBoksStil,
 		{
 			ctor: '::',
 			_0: A2(
 				_mdgriffith$stylish_elephants$Element$el,
-				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _mdgriffith$stylish_elephants$Element$padding(10),
+					_1: {
+						ctor: '::',
+						_0: _mdgriffith$stylish_elephants$Element$centerX,
+						_1: {ctor: '[]'}
+					}
+				},
 				_mdgriffith$stylish_elephants$Element$text('Velkommen til GangeVinne!')),
 			_1: {
 				ctor: '::',
@@ -22068,62 +22425,100 @@ var _jhf$gangevinne$View$viewSkrivNavn = function (navn) {
 				_1: {
 					ctor: '::',
 					_0: A2(
-						_mdgriffith$stylish_elephants$Element$row,
-						{ctor: '[]'},
+						_mdgriffith$stylish_elephants$Element_Input$text,
 						{
 							ctor: '::',
-							_0: A2(
-								_mdgriffith$stylish_elephants$Element_Input$text,
-								{
+							_0: _mdgriffith$stylish_elephants$Element$htmlAttribute(
+								_elm_lang$html$Html_Attributes$id('navn')),
+							_1: {
+								ctor: '::',
+								_0: _mdgriffith$stylish_elephants$Element_Input$focusedOnLoad,
+								_1: {
 									ctor: '::',
 									_0: _mdgriffith$stylish_elephants$Element$htmlAttribute(
-										_elm_lang$html$Html_Attributes$id('navn')),
+										_elm_lang$html$Html_Attributes$autocomplete(false)),
+									_1: {ctor: '[]'}
+								}
+							}
+						},
+						{
+							label: A2(
+								_mdgriffith$stylish_elephants$Element_Input$labelLeft,
+								{ctor: '[]'},
+								_mdgriffith$stylish_elephants$Element$text('Ditt navn:')),
+							text: navn,
+							onChange: _elm_lang$core$Maybe$Just(_jhf$gangevinne$Update$Skrev),
+							placeholder: _elm_lang$core$Maybe$Nothing
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_mdgriffith$stylish_elephants$Element$el,
+							{ctor: '[]'},
+							_mdgriffith$stylish_elephants$Element$text('Velg hva du vil gjøre:')),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_mdgriffith$stylish_elephants$Element$row,
+								{
+									ctor: '::',
+									_0: _mdgriffith$stylish_elephants$Element$padding(10),
 									_1: {
 										ctor: '::',
-										_0: _mdgriffith$stylish_elephants$Element_Input$focusedOnLoad,
-										_1: {
-											ctor: '::',
-											_0: _jhf$gangevinne$Keyboard$onKeydown(
-												{
-													ctor: '::',
-													_0: _jhf$gangevinne$Keyboard$onEnter(_jhf$gangevinne$Update$Navn),
-													_1: {ctor: '[]'}
-												}),
-											_1: {
-												ctor: '::',
-												_0: _mdgriffith$stylish_elephants$Element$htmlAttribute(
-													_elm_lang$html$Html_Attributes$autocomplete(false)),
-												_1: {ctor: '[]'}
-											}
-										}
+										_0: _mdgriffith$stylish_elephants$Element$spacing(20),
+										_1: {ctor: '[]'}
 									}
 								},
 								{
-									label: A2(
-										_mdgriffith$stylish_elephants$Element_Input$labelLeft,
-										{ctor: '[]'},
-										_mdgriffith$stylish_elephants$Element$text('Ditt navn:')),
-									text: navn,
-									onChange: _elm_lang$core$Maybe$Just(_jhf$gangevinne$Update$Skrev),
-									placeholder: _elm_lang$core$Maybe$Nothing
-								}),
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_mdgriffith$stylish_elephants$Element_Input$button,
-									{
+									ctor: '::',
+									_0: A2(
+										_mdgriffith$stylish_elephants$Element_Input$button,
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											_jhf$gangevinne$View$knappeStil,
+											{
+												ctor: '::',
+												_0: _mdgriffith$stylish_elephants$Element_Events$onClick(
+													_jhf$gangevinne$Update$Velg(_jhf$gangevinne$Model$Ganging)),
+												_1: {
+													ctor: '::',
+													_0: _mdgriffith$stylish_elephants$Element$width(_mdgriffith$stylish_elephants$Element$fill),
+													_1: {ctor: '[]'}
+												}
+											}),
+										{
+											onPress: _elm_lang$core$Maybe$Just(
+												_jhf$gangevinne$Update$Velg(_jhf$gangevinne$Model$Ganging)),
+											label: _mdgriffith$stylish_elephants$Element$text('Ganging')
+										}),
+									_1: {
 										ctor: '::',
-										_0: _mdgriffith$stylish_elephants$Element_Events$onClick(_jhf$gangevinne$Update$Navn),
+										_0: A2(
+											_mdgriffith$stylish_elephants$Element_Input$button,
+											A2(
+												_elm_lang$core$Basics_ops['++'],
+												_jhf$gangevinne$View$knappeStil,
+												{
+													ctor: '::',
+													_0: _mdgriffith$stylish_elephants$Element_Events$onClick(
+														_jhf$gangevinne$Update$Velg(_jhf$gangevinne$Model$PlussOgMinus)),
+													_1: {
+														ctor: '::',
+														_0: _mdgriffith$stylish_elephants$Element$width(_mdgriffith$stylish_elephants$Element$fill),
+														_1: {ctor: '[]'}
+													}
+												}),
+											{
+												onPress: _elm_lang$core$Maybe$Just(
+													_jhf$gangevinne$Update$Velg(_jhf$gangevinne$Model$PlussOgMinus)),
+												label: _mdgriffith$stylish_elephants$Element$text('Pluss og minus')
+											}),
 										_1: {ctor: '[]'}
-									},
-									{
-										onPress: _elm_lang$core$Maybe$Just(_jhf$gangevinne$Update$Navn),
-										label: _mdgriffith$stylish_elephants$Element$text('')
-									}),
-								_1: {ctor: '[]'}
-							}
-						}),
-					_1: {ctor: '[]'}
+									}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}
 				}
 			}
 		});
@@ -22150,35 +22545,21 @@ var _jhf$gangevinne$View$view = function (model) {
 			{
 				ctor: '::',
 				_0: function () {
-					var _p4 = model.steg;
-					if (_p4.ctor === 'SkrivNavn') {
-						return _jhf$gangevinne$View$viewSkrivNavn(_p4._0.navn);
+					var _p12 = model.steg;
+					if (_p12.ctor === 'SkrivNavn') {
+						return _jhf$gangevinne$View$viewSkrivNavn(_p12._0.navn);
 					} else {
-						return _jhf$gangevinne$View$viewRegne(_p4._0);
+						return _jhf$gangevinne$View$viewRegne(_p12._0);
 					}
 				}(),
 				_1: {ctor: '[]'}
 			}));
 };
 
-var _jhf$gangevinne$Main$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$none;
-};
-var _jhf$gangevinne$Main$init = {
-	ctor: '_Tuple2',
-	_0: {
-		steg: _jhf$gangevinne$Model$SkrivNavn(
-			{navn: ''})
-	},
-	_1: _elm_lang$core$Platform_Cmd$none
-};
-var _jhf$gangevinne$Main$main = _elm_lang$html$Html$program(
-	{init: _jhf$gangevinne$Main$init, view: _jhf$gangevinne$View$view, update: _jhf$gangevinne$Update$update, subscriptions: _jhf$gangevinne$Main$subscriptions})();
-
 var Elm = {};
-Elm['Main'] = Elm['Main'] || {};
-if (typeof _jhf$gangevinne$Main$main !== 'undefined') {
-    _jhf$gangevinne$Main$main(Elm['Main'], 'Main', undefined);
+Elm['View'] = Elm['View'] || {};
+if (typeof _jhf$gangevinne$View$main !== 'undefined') {
+    _jhf$gangevinne$View$main(Elm['View'], 'View', undefined);
 }
 
 if (typeof define === "function" && define['amd'])
