@@ -32,7 +32,7 @@ view model =
                     viewSkrivNavn navn
 
                 Regne info ->
-                    viewRegne info
+                    visRegne info
             ]
 
 
@@ -96,8 +96,8 @@ knappeStil =
     ]
 
 
-viewRegne : RegneInfo -> Element Msg
-viewRegne info =
+visRegne : RegneInfo -> Element Msg
+visRegne info =
     let
         sendSvar =
             Svar info.oppgave info.skrevet
@@ -116,6 +116,7 @@ viewRegne info =
                         , Input.focusedOnLoad
                         , Keyboard.onKeydown [ Keyboard.onEnter sendSvar ]
                         , htmlAttribute <| autocomplete False
+                        , width <| px 50
                         ]
                         { label = Input.labelLeft [] Element.empty
                         , text = info.skrevet
@@ -129,57 +130,30 @@ viewRegne info =
                         }
                     ]
                 ]
-            , viewRegnet info.regnet
+            , visRegnet info.regnet
             ]
 
 
-viewRegnet : List Gjort -> Element Msg
-viewRegnet regnet =
+visRegnet : List Gjort -> Element Msg
+visRegnet regnet =
     let
-        visFørste gjort =
+        deler gjort =
             let
-                tall =
+                ( første, operator, andre ) =
                     case gjort.oppgave of
                         Gange a b ->
-                            a
+                            ( a, "*", b )
 
                         Pluss a b ->
-                            a
+                            ( a, "+", b )
 
                         Minus a b ->
-                            a
+                            ( a, "-", b )
             in
-                el [ Font.alignRight ] <| text <| toString tall
-
-        visOperator gjort =
-            let
-                operator =
-                    case gjort.oppgave of
-                        Gange _ _ ->
-                            "*"
-
-                        Pluss _ _ ->
-                            "+"
-
-                        Minus _ _ ->
-                            "-"
-            in
-                el [ Font.center ] <| text <| operator
-
-        visAndre gjort =
-            let
-                tall =
-                    case gjort.oppgave of
-                        Gange a b ->
-                            b
-
-                        Pluss a b ->
-                            b
-
-                        Minus a b ->
-                            b
-            in
-                el [ Font.alignRight ] <| text <| toString tall
+                [ el [ Font.alignRight ] <| text <| toString første
+                , el [ Font.center ] <| text <| operator
+                , el [ Font.alignRight ] <| text <| toString andre
+                ]
 
         erLik gjort =
             case gjort.resultat of
@@ -192,34 +166,43 @@ viewRegnet regnet =
         visSvar gjort =
             el [ Font.alignRight ] <| text <| toString gjort.svar
 
-        columns : List (Column Gjort Msg)
-        columns =
-            [ { header = empty
-              , view = visFørste
-              }
-            , { header = empty
-              , view = visOperator
-              }
-            , { header = empty
-              , view = visAndre
-              }
-            , { header = empty
-              , view = erLik
-              }
-            , { header = empty
-              , view = visSvar
-              }
-            ]
+        historikk =
+            case regnet of
+                [] ->
+                    empty
+
+                gjort :: _ ->
+                    row
+                        (hovedBoksStil
+                            ++ [ padding 5
+                               , spacing 5
+                               ]
+                        )
+                        ((deler gjort)
+                            ++ [ erLik gjort
+                               , visSvar gjort
+                               ]
+                        )
+
+        oppsummering =
+            let
+                tell gjort ( riktige, gale ) =
+                    case gjort.resultat of
+                        Riktig ->
+                            ( riktige + 1, gale )
+
+                        Galt ->
+                            ( riktige, gale + 1 )
+
+                ( riktige, gale ) =
+                    List.foldl tell ( 0, 0 ) regnet
+            in
+                row [ padding 5, spacing 10, width fill, centerX ]
+                    [ el [ padding 5, Border.color Color.green, Border.width 5 ] <| text <| toString riktige
+                    , el [ padding 5, Border.color Color.red, Border.width 5 ] <| text <| toString gale
+                    ]
     in
-        Element.table
-            (hovedBoksStil
-                ++ [ padding 5
-                   , spacing 5
-                   ]
-            )
-            { data = regnet
-            , columns = columns
-            }
+        column [] [ oppsummering, historikk ]
 
 
 visOppgave : Oppgave -> Element msg
