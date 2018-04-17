@@ -23,9 +23,9 @@ view : Model -> Html Msg
 view model =
     Element.layout [] <|
         Element.row
-            [ Element.centerX
-            , Element.centerY
-            , Element.width <| Element.shrink
+            [ centerX
+            , centerY
+            , width <| shrink
             ]
             [ case model.steg of
                 SkrivNavn { navn } ->
