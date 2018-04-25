@@ -4,6 +4,7 @@ const merge = require("webpack-merge");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HTMLWebpackPlugin = require("html-webpack-plugin");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
+const outputDirectory = "wwwroot";
 
 var MODE =
     process.env.npm_lifecycle_event === "prod" ? "production" : "development";
@@ -13,7 +14,7 @@ var common = {
     mode: MODE,
     entry: "./src/index.js",
     output: {
-        path: path.join(__dirname, "docs"),
+        path: path.join(__dirname, outputDirectory),
         // webpack -p automatically adds hash when building for production
         filename: filename
     },
@@ -114,7 +115,7 @@ if (MODE === "production") {
     module.exports = merge(common, {
         plugins: [
             // Delete everything from output directory and report to user
-            new CleanWebpackPlugin(["docs"], {
+            new CleanWebpackPlugin([outputDirectory], {
                 root: __dirname,
                 exclude: [],
                 verbose: true,
