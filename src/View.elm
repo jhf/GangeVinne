@@ -10,7 +10,7 @@ import Element.Keyed as Keyed
 import Element.Background as Background
 import Element.Border as Border
 import Html exposing (Html)
-import Html.Attributes exposing (id, autocomplete)
+import Html.Attributes exposing (id, autocomplete, type_)
 import Model exposing (..)
 import Update exposing (Msg(..))
 import Keyboard
@@ -113,6 +113,7 @@ visRegne info =
                     [ Element.el [] <| visOppgave info.oppgave
                     , Input.text
                         [ htmlAttribute <| id "svar"
+                        , htmlAttribute <| type_ "number"
                         , Input.focusedOnLoad
                         , Keyboard.onKeydown [ Keyboard.onEnter sendSvar ]
                         , htmlAttribute <| autocomplete False
