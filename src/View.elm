@@ -113,11 +113,11 @@ visRegne info =
                     [ Element.el [] <| visOppgave info.oppgave
                     , Input.text
                         [ htmlAttribute <| id "svar"
-                        , htmlAttribute <| type_ "number"
+                        , htmlAttribute <| type_ "tel"
                         , Input.focusedOnLoad
                         , Keyboard.onKeydown [ Keyboard.onEnter sendSvar ]
                         , htmlAttribute <| autocomplete False
-                        , width <| px 50
+                        , width <| px 75
                         ]
                         { label = Input.labelLeft [] Element.empty
                         , text = info.skrevet
