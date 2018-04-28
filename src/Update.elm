@@ -32,6 +32,7 @@ update msg model =
                         info =
                             { navn = navn
                             , oppgave = Gange 0 0
+                            , siffer = 1
                             , regnet = []
                             , skrevet = ""
                             , oppgaveType = oppgaveType
@@ -53,54 +54,83 @@ update msg model =
                     ( model, Cmd.none )
 
                 NyOppgave oppgave ->
-                    ( { model | steg = Regne { info | oppgave = oppgave } }, Cmd.none )
+                    let
+                        fasit =
+                            regnUt oppgave
+
+                        siffer =
+                            String.length <| toString <| fasit
+                    in
+                        ( { model | steg = Regne { info | oppgave = oppgave, siffer = siffer } }, Cmd.none )
 
                 Skrev noe ->
-                    ( { model | steg = Regne { info | skrevet = noe } }, Cmd.none )
+                    let
+                        skrevetSiffer =
+                            String.length noe
+                    in
+                        if skrevetSiffer < info.siffer then
+                            ( { model | steg = Regne { info | skrevet = noe } }, Cmd.none )
+                        else
+                            let
+                                ( steg, cmd ) =
+                                    svar info noe
+                            in
+                                ( { model | steg = steg }, cmd )
 
                 Svar oppgave skrevet ->
-                    case toInt skrevet of
-                        Err _ ->
-                            ( { model | steg = Regne { info | skrevet = "" } }, Cmd.none )
+                    let
+                        ( steg, cmd ) =
+                            svar info skrevet
+                    in
+                        ( { model | steg = steg }, cmd )
 
-                        Ok svar ->
-                            let
-                                resultat =
-                                    case oppgave of
-                                        Gange a b ->
-                                            if svar == a * b then
-                                                Riktig
-                                            else
-                                                Galt
 
-                                        Pluss a b ->
-                                            if svar == a + b then
-                                                Riktig
-                                            else
-                                                Galt
+svar : RegneInfo -> String -> ( Steg, Cmd Msg )
+svar info skrevet =
+    case toInt skrevet of
+        Err _ ->
+            ( Regne { info | skrevet = "" }, Cmd.none )
 
-                                        Minus a b ->
-                                            if svar == a - b then
-                                                Riktig
-                                            else
-                                                Galt
+        Ok svar ->
+            let
+                fasit =
+                    regnUt info.oppgave
 
-                                gjort =
-                                    { oppgave = oppgave, svar = svar, resultat = resultat }
+                resultat =
+                    if svar == fasit then
+                        Riktig
+                    else
+                        Galt
 
-                                nyttSteg =
-                                    Regne
-                                        { info
-                                            | regnet = gjort :: info.regnet
-                                            , skrevet = ""
-                                        }
-                            in
-                                ( { model | steg = nyttSteg }
-                                , Cmd.batch
-                                    [ lagTilfeldigOppgave info.oppgaveType
-                                    , hoppTilSkriving
-                                    ]
-                                )
+                gjort =
+                    { oppgave = info.oppgave, svar = svar, resultat = resultat }
+
+                nyttSteg =
+                    Regne
+                        { info
+                            | regnet = gjort :: info.regnet
+                            , skrevet = ""
+                        }
+            in
+                ( nyttSteg
+                , Cmd.batch
+                    [ lagTilfeldigOppgave info.oppgaveType
+                    , hoppTilSkriving
+                    ]
+                )
+
+
+regnUt : Oppgave -> Int
+regnUt oppgave =
+    case oppgave of
+        Gange a b ->
+            a * b
+
+        Pluss a b ->
+            a + b
+
+        Minus a b ->
+            a - b
 
 
 hoppTilSkriving : Cmd Msg
@@ -141,7 +171,7 @@ lagTilfeldigOppgave oppgaveType =
 
                 lagOppgave pluss a b =
                     if pluss then
-                        if  a + b > største then
+                        if a + b > største then
                             lagMinus a b
                         else
                             Pluss a b

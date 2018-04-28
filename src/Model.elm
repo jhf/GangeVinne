@@ -16,6 +16,7 @@ type Steg
 type alias RegneInfo =
     { navn : String
     , oppgave : Oppgave
+    , siffer : Int
     , regnet : List Gjort
     , skrevet : String
     , oppgaveType : OppgaveType
@@ -39,6 +40,7 @@ type Sjekk
 
 type alias Tall =
     Int
+
 
 type OppgaveType
     = Ganging

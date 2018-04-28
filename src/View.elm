@@ -114,7 +114,7 @@ visRegne info =
                     , Input.text
                         [ htmlAttribute <| id "svar"
                         , htmlAttribute <| type_ "text"
-                        , htmlAttribute <| HA.attribute "pattern" "\\d*"
+                        , htmlAttribute <| HA.attribute "pattern" "[0-9]*"
                         , Input.focusedOnLoad
                         , Keyboard.onKeydown [ Keyboard.onEnter sendSvar ]
                         , htmlAttribute <| autocomplete False
