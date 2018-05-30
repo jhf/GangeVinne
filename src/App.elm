@@ -5,6 +5,7 @@ import Model exposing (..)
 import Update exposing (update, lagTilfeldigOppgave)
 import View exposing (view)
 import Storage
+import Time exposing (every, second)
 
 
 main : Program Never Model Msg
@@ -25,6 +26,13 @@ init =
     )
 
 
-subscriptions : a -> Sub Msg
+subscriptions : Model -> Sub Msg
 subscriptions model =
-    Storage.readName
+    let
+        ticker =
+            case model.steg of
+                SkrivNavn _ -> Sub.none
+                Regne _ ->
+                    every second Tid
+    in
+    Sub.batch [Storage.readName, ticker]

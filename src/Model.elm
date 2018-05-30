@@ -1,5 +1,5 @@
 module Model exposing (..)
-
+import Time exposing (Time)
 -- MODEL
 
 
@@ -13,6 +13,7 @@ type Msg
     | Skrev String
     | NyOppgave Oppgave
     | Ingenting
+    | Tid Time
 
 
 type Steg
@@ -27,6 +28,8 @@ type alias RegneInfo =
     , regnet : List Gjort
     , skrevet : String
     , oppgaveType : OppgaveType
+    , startTid : Float
+    , venteTid : Float
     }
 
 

@@ -7,6 +7,8 @@ import Dom
 import Task
 import Model exposing (..)
 import Storage exposing (storeName)
+import Time
+import Task
 
 
 -- UPDATE
@@ -30,10 +32,15 @@ update msg model =
                             , regnet = []
                             , skrevet = ""
                             , oppgaveType = oppgaveType
+                            , startTid = 0
+                            , venteTid = 0
                             }
                     in
                         ( { model | steg = Regne info }
-                        , lagTilfeldigOppgave info.oppgaveType
+                        , Cmd.batch
+                            [ lagTilfeldigOppgave info.oppgaveType
+                            , Task.perform Tid Time.now
+                            ]
                         )
 
                 _ ->
@@ -77,6 +84,17 @@ update msg model =
                             svar info skrevet
                     in
                         ( { model | steg = steg }, cmd )
+                Tid tid ->
+                    let
+                        newInfo =
+                            if info.startTid == 0 then
+                                {info | startTid = Time.inSeconds tid}
+                            else
+                                info
+                        
+                    in
+                    ( { model | steg = Regne { newInfo | venteTid = Time.inSeconds tid - newInfo.startTid }}
+                    , Cmd.none)
 
 
 svar : RegneInfo -> String -> ( Steg, Cmd Msg )
@@ -131,7 +149,6 @@ hoppTilSkriving : Cmd Msg
 hoppTilSkriving =
     Dom.focus "svar"
         |> Task.attempt (\_ -> Ingenting)
-
 
 lagTilfeldigOppgave : OppgaveType -> Cmd Msg
 lagTilfeldigOppgave oppgaveType =

@@ -100,6 +100,22 @@ visRegne info =
     let
         sendSvar =
             Svar info.oppgave info.skrevet
+        seconds =
+            info.venteTid
+        ones =
+            (floor seconds) % 10
+        tens =
+            floor <| seconds / 10
+        hundreds =
+            floor <| seconds / 100
+        oneCells =
+            List.repeat ones <| Element.el [Background.color Color.lightBlue] <| text "."
+        tenCells =
+            List.repeat tens <| Element.el [Background.color Color.lightBlue] <| text "-"
+        hundredCells =
+            List.repeat hundreds <| Element.el [Background.color Color.lightBlue] <| text "|"
+        timer =
+            Element.row [] (tenCells ++ oneCells)
     in
         Element.row
             [ Element.spacing 10 ]
@@ -130,6 +146,7 @@ visRegne info =
                         , label = Element.text "Sjekk!"
                         }
                     ]
+                , timer
                 ]
             , visRegnet info.regnet
             ]
