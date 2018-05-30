@@ -1,5 +1,12 @@
 {
     "elm.makeOutput": "app.js",
-    "elm.formatOnSave": true,
-    "elm.analyseEnabled": true
+    "elm.analyseEnabled": true,
+    "git.confirmSync": false,
+    "editor.minimap.enabled": false,
+    "git.autofetch": true,
+    "editor.formatOnSave": true,
+    "elm.makeSpecialFile": "src/App.elm",
+    "elm.formatCommand": "./node_modules/.bin/elm-format",
+    "elm.makeCommand": "./node_modules/.bin/elm-make",
+    "elm.analyseCommand": "./node_modules/.bin/elm-analyse",
 }
