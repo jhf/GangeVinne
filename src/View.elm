@@ -116,7 +116,8 @@ visRegne info =
             List.repeat hundreds <| Element.el [Background.color Color.blue] <| text "|"
         timer =
             Element.row [width shrink]
-                [ Element.row [] hundredCells
+                [ text "⏱"
+                , Element.row [] hundredCells
                 , Element.row [] tenCells
                 , Element.row [] oneCells
                 ]
@@ -189,39 +190,52 @@ visRegnet regnet =
                     empty
 
                 gjort :: _ ->
-                    row
-                        (hovedBoksStil
-                            ++ [ padding 5
-                               , spacing 5
-                               ]
-                        )
-                        ((deler gjort)
-                            ++ [ erLik gjort
-                               , visSvar gjort
-                               ]
-                        )
+                    case gjort.resultat of
+                        Riktig -> empty
+                        Galt ->
+                            row
+                                (hovedBoksStil
+                                    ++ [ padding 5
+                                    , spacing 5
+                                    ]
+                                )
+                                ((deler gjort)
+                                    ++ [ erLik gjort
+                                    , visSvar gjort
+                                    ]
+                                )
 
         oppsummering =
             let
-                tell gjort ( riktige, gale ) =
+                tidsVekt = 0.5
+                tell gjort ( riktige, gale, totalTid, antall, vektetTid) =
+                    let
+                        nyttAntall = antall + 1
+                        nyVektetTid = gjort.tid + vektetTid*antall*tidsVekt / nyttAntall
+                    in
                     case gjort.resultat of
                         Riktig ->
-                            ( riktige + 1, gale )
+                            ( riktige + 1, gale, totalTid + gjort.tid, nyttAntall, nyVektetTid )
 
                         Galt ->
-                            ( riktige, gale + 1 )
+                            ( riktige, gale + 1 , totalTid + gjort.tid, nyttAntall, nyVektetTid)
 
-                ( riktige, gale ) =
-                    List.foldl tell ( 0, 0 ) regnet
+                ( riktige, gale , totalTid, antall, vektetTid) =
+                    List.foldl tell ( 0, 0, 0, 0, 0) regnet
+            
+                snittTid =
+                    totalTid / antall
+                
             in
                 row [ padding 5, spacing 10, width fill, centerX ]
-                    [ el [ padding 5, Border.color Color.green, Border.width 5, alignLeft ] <| text <| toString riktige
-                    , el [ padding 5, Border.color Color.red, Border.width 5, alignRight ] <| text <| toString gale
+                    [ el [ padding 5, alignLeft ] <| text <| "✅" ++ (toString riktige)
+                    , el [ padding 5, centerX ] <| text <| "⏱" ++ (toString <| round snittTid)
+                    , el [ padding 5, alignRight ] <| text <| "❌" ++ (toString gale)
                     ]
     in
         column []
-            [ historikk
-            , oppsummering
+            [ oppsummering
+            , historikk
             ]
 
 
