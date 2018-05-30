@@ -126,7 +126,7 @@ visRegne info =
             [ Element.spacing 10 ]
             [ Element.column
                 hovedBoksStil
-                [ Element.el [] (Element.text <| "Hei " ++ info.navn)
+                [ Element.el [] (Element.text <| info.navn ++ (badges info.regnet))
                 , Element.el [] (Element.text "Svar på oppgaven")
                 , Element.row
                     [ spacing 10 ]
@@ -150,6 +150,72 @@ visRegne info =
                 ]
             , visRegnet info.regnet
             ]
+
+
+badges : List Gjort -> String
+badges regnet =
+    let
+        stat =
+            statistikk regnet
+        avatar =
+            if stat.antall > 30 then
+                "🐅"
+            else if stat.antall > 20 then
+                "🐈"
+            else if stat.antall > 10 then
+                "🐁"
+            else if stat.antall > 0 then
+                "🐀"
+            else
+                ""
+
+        hastighet =
+            if stat.vektetTid > 20 then 
+                "🐢"
+            else if stat.vektetTid > 10 then
+                "🐕"
+            else if stat.vektetTid > 0 then
+                "🐇"
+            else
+                ""
+        ferdighet =
+            if stat.riktige > 20 then
+                "🐘"
+            else if stat.riktige > 10 then
+                "🦉"
+            else if stat.riktige > 0 then
+            else
+                ""
+    in
+        avatar ++ hastighet ++ ferdighet
+
+statistikk : List Gjort -> {riktige: Int, gale: Int, totalTid: Float, antall: Float, vektetTid: Float, snittTid: Float}
+statistikk regnet =
+    let
+        tidsVekt = 0.5
+        tell gjort ( riktige, gale, totalTid, antall, vektetTid) =
+            let
+                nyttAntall = antall + 1
+                nyVektetTid = gjort.tid + vektetTid*antall*tidsVekt / nyttAntall
+            in
+            case gjort.resultat of
+                Riktig ->
+                    ( riktige + 1, gale, totalTid + gjort.tid, nyttAntall, nyVektetTid )
+
+                Galt ->
+                    ( riktige, gale + 1 , totalTid + gjort.tid, nyttAntall, nyVektetTid)
+
+        ( riktige, gale , totalTid, antall, vektetTid) =
+            List.foldl tell ( 0, 0, 0, 0, 0) regnet
+    in
+        { riktige = riktige 
+        , gale = gale 
+        , totalTid = totalTid 
+        , antall = antall 
+        , vektetTid = vektetTid
+        , snittTid = totalTid / antall
+        }
+
 
 
 visRegnet : List Gjort -> Element Msg
@@ -207,30 +273,13 @@ visRegnet regnet =
 
         oppsummering =
             let
-                tidsVekt = 0.5
-                tell gjort ( riktige, gale, totalTid, antall, vektetTid) =
-                    let
-                        nyttAntall = antall + 1
-                        nyVektetTid = gjort.tid + vektetTid*antall*tidsVekt / nyttAntall
-                    in
-                    case gjort.resultat of
-                        Riktig ->
-                            ( riktige + 1, gale, totalTid + gjort.tid, nyttAntall, nyVektetTid )
-
-                        Galt ->
-                            ( riktige, gale + 1 , totalTid + gjort.tid, nyttAntall, nyVektetTid)
-
-                ( riktige, gale , totalTid, antall, vektetTid) =
-                    List.foldl tell ( 0, 0, 0, 0, 0) regnet
-            
-                snittTid =
-                    totalTid / antall
-                
+                stat =
+                    statistikk regnet                
             in
                 row [ padding 5, spacing 10, width fill, centerX ]
-                    [ el [ padding 5, alignLeft ] <| text <| "✅" ++ (toString riktige)
-                    , el [ padding 5, centerX ] <| text <| "⏱" ++ (toString <| round snittTid)
-                    , el [ padding 5, alignRight ] <| text <| "❌" ++ (toString gale)
+                    [ el [ padding 5, alignLeft ] <| text <| "✅" ++ (toString stat.riktige)
+                    , el [ padding 5, centerX ] <| text <| "⏱" ++ (toString <| round stat.snittTid)
+                    , el [ padding 5, alignRight ] <| text <| "❌" ++ (toString stat.gale)
                     ]
     in
         column []
