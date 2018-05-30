@@ -182,8 +182,9 @@ badges regnet =
             if stat.riktige > 20 then
                 "🐘"
             else if stat.riktige > 10 then
-                "🦉"
+                "🐬"
             else if stat.riktige > 0 then
+                "🦉"
             else
                 ""
     in
