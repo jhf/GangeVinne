@@ -12,7 +12,6 @@ import Element.Border as Border
 import Html exposing (Html)
 import Html.Attributes as HA exposing (id, autocomplete, type_)
 import Model exposing (..)
-import Update exposing (Msg(..))
 import Keyboard
 
 

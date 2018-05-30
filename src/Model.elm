@@ -7,6 +7,13 @@ type alias Model =
     { steg : Steg
     }
 
+type Msg
+    = Svar Oppgave String
+    | Velg OppgaveType
+    | Skrev String
+    | NyOppgave Oppgave
+    | Ingenting
+
 
 type Steg
     = SkrivNavn { navn : String }

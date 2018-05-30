@@ -10,8 +10,6 @@ Storage.removeItem() // When passed a key name, will remove that key from the st
 Storage.clear() // When invoked, will empty all keys out of the storage.
 -}
 
-storageKeys = { name = "name"}
-
 -- Elm -> JS
 port storageKey : Int -> Cmd msg
 port storageGetItem : String -> Cmd msg

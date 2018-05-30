@@ -6,20 +6,10 @@ import Random
 import Dom
 import Task
 import Model exposing (..)
-import Ports exposing (storageSetItem, storageKeys)
-import Json.Encode as JE
+import Storage exposing (storeName)
 
 
 -- UPDATE
-
-
-type Msg
-    = Svar Oppgave String
-    | Velg OppgaveType
-    | Skrev String
-    | NyOppgave Oppgave
-    | Ingenting
-
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -28,7 +18,7 @@ update msg model =
             case msg of
                 Skrev noe ->
                     ( { model | steg = SkrivNavn { navn = noe } }
-                    , storageSetItem {key= storageKeys.name, value = JE.string noe}
+                    , storeName noe
                     )
 
                 Velg oppgaveType ->

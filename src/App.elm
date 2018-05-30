@@ -2,10 +2,9 @@ module App exposing (..)
 
 import Html exposing (Html)
 import Model exposing (..)
-import Update exposing (update, Msg, lagTilfeldigOppgave)
+import Update exposing (update, lagTilfeldigOppgave)
 import View exposing (view)
-import Ports exposing (storageGetItem, storageGetItemReply, storageKeys)
-import Json.Decode as JD
+import Storage
 
 
 main : Program Never Model Msg
@@ -22,22 +21,10 @@ init : ( Model, Cmd Msg )
 init =
     ( { steg = SkrivNavn { navn = "" }
       }
-    , storageGetItem storageKeys.name
+    , Storage.loadName
     )
 
 
 subscriptions : a -> Sub Msg
 subscriptions model =
-    let
-        handler {key, value} = 
-            if key == storageKeys.name then
-                case JD.decodeValue JD.string value of
-                    Ok name -> 
-                        Update.Skrev name
-                    Err msg ->
-                        Update.Ingenting
-            else
-                Update.Ingenting
-
-    in
-    storageGetItemReply handler
+    Storage.readName
