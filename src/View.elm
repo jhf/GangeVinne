@@ -140,11 +140,6 @@ visRegne info =
                         , onChange = Just Skrev
                         , placeholder = Nothing
                         }
-                    , Input.button
-                        (knappeStil ++ [ Events.onClick sendSvar ])
-                        { onPress = Just sendSvar
-                        , label = Element.text "Sjekk!"
-                        }
                     ]
                 , timer
                 ]
