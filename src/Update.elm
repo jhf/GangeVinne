@@ -115,13 +115,15 @@ svar info skrevet =
                         Galt
 
                 gjort =
-                    { oppgave = info.oppgave, svar = svar, resultat = resultat }
+                    { oppgave = info.oppgave, svar = svar, resultat = resultat, tid = info.venteTid }
 
                 nyttSteg =
                     Regne
                         { info
                             | regnet = gjort :: info.regnet
                             , skrevet = ""
+                            , venteTid = 0
+                            , startTid = 0
                         }
             in
                 ( nyttSteg

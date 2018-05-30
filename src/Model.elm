@@ -34,7 +34,7 @@ type alias RegneInfo =
 
 
 type alias Gjort =
-    { oppgave : Oppgave, svar : Tall, resultat : Sjekk }
+    { oppgave : Oppgave, svar : Tall, resultat : Sjekk, tid: Float }
 
 
 type Oppgave

@@ -109,15 +109,19 @@ visRegne info =
         hundreds =
             floor <| seconds / 100
         oneCells =
-            List.repeat ones <| Element.el [Background.color Color.lightBlue] <| text "."
+            List.repeat ones <| Element.el [Background.color Color.white] <| text "."
         tenCells =
             List.repeat tens <| Element.el [Background.color Color.lightBlue] <| text "-"
         hundredCells =
-            List.repeat hundreds <| Element.el [Background.color Color.lightBlue] <| text "|"
+            List.repeat hundreds <| Element.el [Background.color Color.blue] <| text "|"
         timer =
-            Element.row [] (tenCells ++ oneCells)
+            Element.row [width shrink]
+                [ Element.row [] hundredCells
+                , Element.row [] tenCells
+                , Element.row [] oneCells
+                ]
     in
-        Element.row
+        Element.column
             [ Element.spacing 10 ]
             [ Element.column
                 hovedBoksStil
@@ -211,11 +215,14 @@ visRegnet regnet =
                     List.foldl tell ( 0, 0 ) regnet
             in
                 row [ padding 5, spacing 10, width fill, centerX ]
-                    [ el [ padding 5, Border.color Color.green, Border.width 5 ] <| text <| toString riktige
-                    , el [ padding 5, Border.color Color.red, Border.width 5 ] <| text <| toString gale
+                    [ el [ padding 5, Border.color Color.green, Border.width 5, alignLeft ] <| text <| toString riktige
+                    , el [ padding 5, Border.color Color.red, Border.width 5, alignRight ] <| text <| toString gale
                     ]
     in
-        column [] [ oppsummering, historikk ]
+        column []
+            [ historikk
+            , oppsummering
+            ]
 
 
 visOppgave : Oppgave -> Element msg
