@@ -41,6 +41,9 @@
         "webpack-merge": "^4.1.2"
     },
     "dependencies": {
+        "elm": "^0.18.0",
+        "elm-analyse": "^0.14.2",
+        "elm-format": "^0.7.0-exp",
         "loglevel": "^1.6.1"
     }
 }
