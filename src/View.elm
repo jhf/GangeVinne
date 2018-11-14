@@ -24,7 +24,7 @@ import Time
 
 view : Model -> Browser.Document Msg
 view model =
-    Element.row
+    row
         [ centerX
         , centerY
         , width <| shrink
@@ -36,43 +36,43 @@ view model =
             Regne info ->
                 visRegne info
         ]
-        |> (\ui -> { title = "Gange => Vinne", body = [ Element.layout [] ui ] })
+        |> (\ui -> { title = "Gange => Vinne", body = [ layout [] ui ] })
 
 
 viewSkrivNavn : String -> Element Msg
 viewSkrivNavn navn =
-    Element.column
+    column
         hovedBoksStil
-        [ Element.el
+        [ el
             [ padding 10
             , centerX
             ]
-            (Element.text "Velkommen til GangeVinne!")
-        , Element.el [] (Element.text "Hva heter du?")
+            (text "Velkommen til GangeVinne!")
+        , el [] (text "Hva heter du?")
         , Input.text
             [ htmlAttribute <| id "navn"
             , Input.focusedOnLoad
             , htmlAttribute <| autocomplete False
             ]
-            { label = Input.labelLeft [] <| Element.text "Ditt navn:"
+            { label = Input.labelLeft [centerX] <| text "Ditt navn:"
             , text = navn
             , onChange = Skrev
             , placeholder = Nothing
             }
-        , Element.el [] (Element.text "Velg hva du vil gjøre:")
-        , Element.row
-            [ Element.padding 10
-            , Element.spacing 20
+        , el [] (text "Velg hva du vil gjøre:")
+        , row
+            [ padding 10
+            , spacing 20
             ]
             [ Input.button
                 (knappeStil ++ [ Events.onClick <| Velg Ganging Nothing, width fill ])
                 { onPress = Just <| Velg Ganging Nothing
-                , label = Element.text "Ganging"
+                , label = text "Ganging"
                 }
             , Input.button
                 (knappeStil ++ [ Events.onClick <| Velg PlussOgMinus Nothing, width fill ])
                 { onPress = Just <| Velg PlussOgMinus Nothing
-                , label = Element.text "Pluss og minus"
+                , label = text "Pluss og minus"
                 }
             ]
         ]
@@ -82,9 +82,9 @@ hovedBoksStil : List (Attribute msg)
 hovedBoksStil =
     [ Border.width 2
     , Border.rounded 5
-    , Element.padding 10
-    , Element.spacing 5
-    , Element.height Element.shrink
+    , padding 10
+    , spacing 5
+    , height shrink
     ]
 
 
@@ -118,31 +118,31 @@ visRegne info =
             seconds // 100
 
         oneCells =
-            List.repeat ones <| Element.el [ Background.color Art.white ] <| text "."
+            List.repeat ones <| el [ Background.color Art.white ] <| text "."
 
         tenCells =
-            List.repeat tens <| Element.el [ Background.color Art.lightBlue ] <| text "-"
+            List.repeat tens <| el [ Background.color Art.lightBlue ] <| text "-"
 
         hundredCells =
-            List.repeat hundreds <| Element.el [ Background.color Art.blue ] <| text "|"
+            List.repeat hundreds <| el [ Background.color Art.blue ] <| text "|"
 
         timer =
-            Element.row [ width shrink ]
+            row [ width shrink ]
                 [ text "⏱"
-                , Element.row [] hundredCells
-                , Element.row [] tenCells
-                , Element.row [] oneCells
+                , row [] hundredCells
+                , row [] tenCells
+                , row [] oneCells
                 ]
     in
-    Element.column
-        [ Element.spacing 10 ]
-        [ Element.column
+    column
+        [ spacing 10 ]
+        [ column
             hovedBoksStil
-            [ Element.el [] (Element.text <| info.navn ++ badges info.regnet)
-            , Element.el [] (Element.text "Svar på oppgaven")
-            , Element.row
+            [ el [] (text <| info.navn ++ badges info.regnet)
+            , el [] (text "Svar på oppgaven")
+            , row
                 [ spacing 10 ]
-                [ Element.el [] <| visOppgave info.oppgave
+                [ el [] <| visOppgave info.oppgave
                 , Input.text
                     [ htmlAttribute <| id "svar"
                     , htmlAttribute <| type_ "text"
@@ -351,4 +351,4 @@ visOppgave oppgave =
         regneStykke =
             a__ ++ " " ++ op ++ " " ++ b__
     in
-    Element.text <| regneStykke ++ " ="
+    text <| regneStykke ++ " ="
