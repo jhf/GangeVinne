@@ -5,12 +5,11 @@
     "description": "For å vinne gangingen!",
     "main": "index.js",
     "scripts": {
-        "test": "elm-verify-examples && elm-test",
+        "test": "elm-test",
         "start": "yarn run dev",
-        "dev": "webpack-dev-server --hot --port 4000 --colors",
+        "dev": "webpack-dev-server --hot --colors --port 4000",
         "build": "webpack",
-        "prod": "webpack -p",
-        "postinstall": "elm-package install -y && elm-test init"
+        "prod": "webpack -p"
     },
     "repository": {
         "type": "git",
@@ -18,32 +17,36 @@
     },
     "license": "MIT",
     "devDependencies": {
-        "babel-core": "^6.26.0",
-        "babel-loader": "^7.1.4",
-        "babel-preset-env": "^1.6.1",
+        "@babel/core": "^7.1.2",
+        "@babel/preset-env": "^7.1.0",
+        "babel-loader": "^8.0.4",
         "clean-webpack-plugin": "^0.1.19",
-        "copy-webpack-plugin": "^4.5.1",
-        "css-loader": "^0.28.11",
-        "elm-hot-loader": "^0.5.4",
-        "elm-verify-examples": "^2.3.1",
-        "elm-webpack-loader": "^4.5.0",
-        "extract-text-webpack-plugin": "^3.0.2",
-        "file-loader": "^1.1.11",
-        "html-webpack-plugin": "^3.1.0",
-        "node-sass": "^4.8.3",
-        "resolve-url-loader": "^2.3.0",
-        "sass-loader": "^6.0.7",
-        "style-loader": "^0.20.3",
-        "url-loader": "^1.0.1",
-        "webpack": "^4.2.0",
-        "webpack-cli": "^2.0.13",
-        "webpack-dev-server": "^3.1.1",
-        "webpack-merge": "^4.1.2"
+        "copy-webpack-plugin": "^4.5.2",
+        "css-loader": "^1.0.0",
+        "elm-analyse": "^0.15.0",
+        "elm-format": "^0.8.1",
+        "elm-hot-webpack-loader": "^1.0.2",
+        "elm-test": "^0.19.0-beta10",
+        "elm-verify-examples": "^3.0.1",
+        "elm-webpack-loader": "^5.0.0",
+        "file-loader": "^2.0.0",
+        "html-webpack-plugin": "^3.2.0",
+        "mini-css-extract-plugin": "^0.4.3",
+        "node-sass": "^4.9.3",
+        "resolve-url-loader": "^3.0.0",
+        "sass-loader": "^7.1.0",
+        "style-loader": "^0.23.0",
+        "url-loader": "^1.1.1",
+        "webpack": "^4.20.2",
+        "webpack-cli": "^3.1.2",
+        "webpack-dev-server": "^3.1.9",
+        "webpack-merge": "^4.1.4"
     },
     "dependencies": {
-        "elm": "^0.18.0",
-        "elm-analyse": "^0.14.2",
-        "elm-format": "^0.7.0-exp",
-        "loglevel": "^1.6.1"
+        "elm": "^0.19.0-bugfix2",
+        "purecss": "^1.0.0"
+    },
+    "prettier": {
+        "tabWidth": 4
     }
 }

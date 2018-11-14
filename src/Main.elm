@@ -1,5 +1,7 @@
-module App exposing (..)
+module Main exposing (main)
 
+import Browser
+import Browser.Navigation as Nav
 import Html exposing (Html)
 import Model exposing (..)
 import Update exposing (update, lagTilfeldigOppgave)
@@ -10,7 +12,7 @@ import Time exposing (every, second)
 
 main : Program Never Model Msg
 main =
-    Html.program
+    Browser.document
         { init = init
         , view = view
         , update = update

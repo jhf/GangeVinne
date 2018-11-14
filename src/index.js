@@ -1,9 +1,7 @@
 'use strict';
 
-require("./index.scss");
-
-var Elm = require('./App');
-var app = Elm.App.fullscreen();
+const {Elm} = require('./Main');
+var app = Elm.Main.init();
 
 /*
 Storage.key() // When passed a number n, this method will return the name of the nth key in the storage.
@@ -34,3 +32,4 @@ app.ports.storageRemoveItem.subscribe(function (key) {
 app.ports.storageClear.subscribe(function () {
     localStorage.clear()
 });
+
