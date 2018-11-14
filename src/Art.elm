@@ -1,195 +1,195 @@
 module Art exposing (black, blue, brown, charcoal, darkBlue, darkBrown, darkCharcoal, darkGray, darkGreen, darkGrey, darkOrange, darkPurple, darkRed, darkYellow, gray, green, grey, lightBlue, lightBrown, lightCharcoal, lightGray, lightGreen, lightGrey, lightOrange, lightPurple, lightRed, lightYellow, orange, purple, red, white, yellow)
 
-import Element exposing (Color, rgb, rgba)
+import Element exposing (Color, rgb)
 
 
 {-| -}
 lightRed : Color
 lightRed =
-    rgba 239 41 41 1
+    rgb 239 41 41
 
 
 {-| -}
 red : Color
 red =
-    rgba 204 0 0 1
+    rgb 204 0 0
 
 
 {-| -}
 darkRed : Color
 darkRed =
-    rgba 164 0 0 1
+    rgb 164 0 0
 
 
 {-| -}
 lightOrange : Color
 lightOrange =
-    rgba 252 175 62 1
+    rgb 252 175 62
 
 
 {-| -}
 orange : Color
 orange =
-    rgba 245 121 0 1
+    rgb 245 121 0
 
 
 {-| -}
 darkOrange : Color
 darkOrange =
-    rgba 206 92 0 1
+    rgb 206 92 0
 
 
 {-| -}
 lightYellow : Color
 lightYellow =
-    rgba 255 233 79 1
+    rgb 255 233 79
 
 
 {-| -}
 yellow : Color
 yellow =
-    rgba 237 212 0 1
+    rgb 237 212 0
 
 
 {-| -}
 darkYellow : Color
 darkYellow =
-    rgba 196 160 0 1
+    rgb 196 160 0
 
 
 {-| -}
 lightGreen : Color
 lightGreen =
-    rgba 138 226 52 1
+    rgb 138 226 52
 
 
 {-| -}
 green : Color
 green =
-    rgba 115 210 22 1
+    rgb 115 210 22
 
 
 {-| -}
 darkGreen : Color
 darkGreen =
-    rgba 78 154 6 1
+    rgb 78 154 6
 
 
 {-| -}
 lightBlue : Color
 lightBlue =
-    rgba 114 159 207 1
+    rgb 114 159 207
 
 
 {-| -}
 blue : Color
 blue =
-    rgba 52 101 164 1
+    rgb 52 101 164
 
 
 {-| -}
 darkBlue : Color
 darkBlue =
-    rgba 32 74 135 1
+    rgb 32 74 135
 
 
 {-| -}
 lightPurple : Color
 lightPurple =
-    rgba 173 127 168 1
+    rgb 173 127 168
 
 
 {-| -}
 purple : Color
 purple =
-    rgba 117 80 123 1
+    rgb 117 80 123
 
 
 {-| -}
 darkPurple : Color
 darkPurple =
-    rgba 92 53 102 1
+    rgb 92 53 102
 
 
 {-| -}
 lightBrown : Color
 lightBrown =
-    rgba 233 185 110 1
+    rgb 233 185 110
 
 
 {-| -}
 brown : Color
 brown =
-    rgba 193 125 17 1
+    rgb 193 125 17
 
 
 {-| -}
 darkBrown : Color
 darkBrown =
-    rgba 143 89 2 1
+    rgb 143 89 2
 
 
 {-| -}
 black : Color
 black =
-    rgba 0 0 0 1
+    rgb 0 0 0
 
 
 {-| -}
 white : Color
 white =
-    rgba 255 255 255 1
+    rgb 255 255 255
 
 
 {-| -}
 lightGrey : Color
 lightGrey =
-    rgba 238 238 236 1
+    rgb 238 238 236
 
 
 {-| -}
 grey : Color
 grey =
-    rgba 211 215 207 1
+    rgb 211 215 207
 
 
 {-| -}
 darkGrey : Color
 darkGrey =
-    rgba 186 189 182 1
+    rgb 186 189 182
 
 
 {-| -}
 lightGray : Color
 lightGray =
-    rgba 238 238 236 1
+    rgb 238 238 236
 
 
 {-| -}
 gray : Color
 gray =
-    rgba 211 215 207 1
+    rgb 211 215 207
 
 
 {-| -}
 darkGray : Color
 darkGray =
-    rgba 186 189 182 1
+    rgb 186 189 182
 
 
 {-| -}
 lightCharcoal : Color
 lightCharcoal =
-    rgba 136 138 133 1
+    rgb 136 138 133
 
 
 {-| -}
 charcoal : Color
 charcoal =
-    rgba 85 87 83 1
+    rgb 85 87 83
 
 
 {-| -}
 darkCharcoal : Color
 darkCharcoal =
-    rgba 46 52 54 1
+    rgb 46 52 54
