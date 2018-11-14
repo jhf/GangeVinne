@@ -1,17 +1,27 @@
-module Keyboard exposing (..)
+module Keydown exposing (key, matchKey, onBackspace, onCtrlDown, onCtrlUp, onDelete, onDown, onEnd, onEnter, onEsc, onHome, onKeydown, onKeydownHtml, onPageDown, onPageUp, onShiftTab, onSpace, onTab, onUp)
 
 import Element exposing (Attribute, htmlAttribute)
 import Html
-import Html.Events exposing (keyCode, onWithOptions)
+import Html.Events exposing (preventDefaultOn)
 import Json.Decode as Decode exposing (Decoder)
 
 
-exclusiveOnKeydown : Decoder msg -> Html.Attribute msg
-exclusiveOnKeydown =
-    onWithOptions "keydown"
-        { preventDefault = True
-        , stopPropagation = True
-        }
+key : Decoder String
+key =
+    Decode.field "key" Decode.string
+
+
+matchKey : String -> msg -> Decoder msg
+matchKey keyToMatch msg =
+    key
+        |> Decode.andThen
+            (\currentKey ->
+                if currentKey == keyToMatch then
+                    Decode.succeed msg
+
+                else
+                    Decode.fail ""
+            )
 
 
 onKeydown : List (Decoder msg) -> Attribute msg
@@ -21,6 +31,8 @@ onKeydown =
 
 onKeydownHtml : List (Decoder msg) -> Html.Attribute msg
 onKeydownHtml decoders =
+    -- TODO: Can be replaced by a Decode.oneOf when bug is fixed
+    -- https://ellie-app.com/3CDyCN6B5wxa1
     Decode.value
         |> Decode.andThen
             (\val ->
@@ -36,114 +48,78 @@ onKeydownHtml decoders =
                             [] ->
                                 Decode.fail "No match"
                 in
-                    matchKeydown decoders
+                matchKeydown decoders
             )
-        |> exclusiveOnKeydown
+        >> Decode.map (\msg -> ( msg, True ))
+        -- Prevent default is necessary to prevent some browsers from
+        -- focusing on the taskbar if an input element at the bottom of the
+        -- page is tabbed from.
+        >> preventDefaultOn "keydown"
 
 
 onDown : msg -> Decoder msg
-onDown msg =
-    keyCode
-        |> Decode.andThen
-            (\c ->
-                if c == 40 then
-                    Decode.succeed msg
-                else
-                    Decode.fail ""
-            )
+onDown =
+    matchKey "ArrowDown"
 
 
 onEnter : msg -> Decoder msg
-onEnter msg =
-    keyCode
-        |> Decode.andThen
-            (\c ->
-                if c == 13 then
-                    Decode.succeed msg
-                else
-                    Decode.fail ""
-            )
+onEnter =
+    matchKey "Enter"
 
 
 onEsc : msg -> Decoder msg
-onEsc msg =
-    keyCode
-        |> Decode.andThen
-            (\c ->
-                if c == 27 then
-                    Decode.succeed msg
-                else
-                    Decode.fail ""
-            )
+onEsc =
+    matchKey "Escape"
 
 
 onUp : msg -> Decoder msg
-onUp msg =
-    keyCode
-        |> Decode.andThen
-            (\c ->
-                if c == 38 then
-                    Decode.succeed msg
-                else
-                    Decode.fail ""
-            )
+onUp =
+    matchKey "ArrowUp"
 
 
 onEnd : msg -> Decoder msg
-onEnd msg =
-    keyCode
-        |> Decode.andThen
-            (\c ->
-                if c == 35 then
-                    Decode.succeed msg
-                else
-                    Decode.fail ""
-            )
+onEnd =
+    matchKey "End"
 
 
 onHome : msg -> Decoder msg
-onHome msg =
-    keyCode
-        |> Decode.andThen
-            (\c ->
-                if c == 36 then
-                    Decode.succeed msg
-                else
-                    Decode.fail ""
-            )
+onHome =
+    matchKey "Home"
 
 
 onPageUp : msg -> Decoder msg
-onPageUp msg =
-    keyCode
-        |> Decode.andThen
-            (\c ->
-                if c == 33 then
-                    Decode.succeed msg
-                else
-                    Decode.fail ""
-            )
+onPageUp =
+    matchKey "PageUp"
 
 
 onPageDown : msg -> Decoder msg
-onPageDown msg =
-    keyCode
-        |> Decode.andThen
-            (\c ->
-                if c == 34 then
-                    Decode.succeed msg
-                else
-                    Decode.fail ""
-            )
+onPageDown =
+    matchKey "PageDown"
+
+
+onSpace : msg -> Decoder msg
+onSpace =
+    matchKey " "
+
+
+onDelete : msg -> Decoder msg
+onDelete =
+    matchKey "Delete"
+
+
+onBackspace : msg -> Decoder msg
+onBackspace =
+    matchKey "Backspace"
 
 
 onTab : msg -> Decoder msg
 onTab msg =
-    keyCode
+    key
         |> Decode.andThen
-            (\code ->
-                if code == 9 then
+            (\k ->
+                if k == "Tab" then
                     Decode.field "shiftKey" Decode.bool
+
                 else
                     Decode.fail ""
             )
@@ -151,6 +127,7 @@ onTab msg =
             (\shift ->
                 if shift then
                     Decode.fail ""
+
                 else
                     Decode.succeed msg
             )
@@ -158,11 +135,12 @@ onTab msg =
 
 onShiftTab : msg -> Decoder msg
 onShiftTab msg =
-    keyCode
+    key
         |> Decode.andThen
-            (\code ->
-                if code == 9 then
+            (\k ->
+                if k == "Tab" then
                     Decode.field "shiftKey" Decode.bool
+
                 else
                     Decode.fail ""
             )
@@ -170,6 +148,7 @@ onShiftTab msg =
             (\shift ->
                 if shift then
                     Decode.succeed msg
+
                 else
                     Decode.fail ""
             )
@@ -177,11 +156,12 @@ onShiftTab msg =
 
 onCtrlUp : msg -> Decoder msg
 onCtrlUp msg =
-    keyCode
+    key
         |> Decode.andThen
-            (\code ->
-                if code == 38 then
+            (\k ->
+                if k == "ArrowUp" then
                     Decode.field "ctrlKey" Decode.bool
+
                 else
                     Decode.fail ""
             )
@@ -189,6 +169,7 @@ onCtrlUp msg =
             (\ctrl ->
                 if ctrl then
                     Decode.succeed msg
+
                 else
                     Decode.fail ""
             )
@@ -196,11 +177,12 @@ onCtrlUp msg =
 
 onCtrlDown : msg -> Decoder msg
 onCtrlDown msg =
-    keyCode
+    key
         |> Decode.andThen
-            (\code ->
-                if code == 40 then
+            (\k ->
+                if k == "ArrowDown" then
                     Decode.field "ctrlKey" Decode.bool
+
                 else
                     Decode.fail ""
             )
@@ -208,6 +190,7 @@ onCtrlDown msg =
             (\ctrl ->
                 if ctrl then
                     Decode.succeed msg
+
                 else
                     Decode.fail ""
             )

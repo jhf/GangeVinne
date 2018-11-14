@@ -1,5 +1,9 @@
-module Model exposing (..)
-import Time exposing (Time)
+module Model exposing (Gjort, Model, Msg(..), Oppgave(..), OppgaveType(..), RegneInfo, Sjekk(..), Steg(..), Tall)
+
+import Time exposing (Posix)
+
+
+
 -- MODEL
 
 
@@ -7,13 +11,14 @@ type alias Model =
     { steg : Steg
     }
 
+
 type Msg
     = Svar Oppgave String
-    | Velg OppgaveType
+    | Velg OppgaveType (Maybe Time.Posix)
     | Skrev String
     | NyOppgave Oppgave
     | Ingenting
-    | Tid Time
+    | Tid Posix
 
 
 type Steg
@@ -28,13 +33,13 @@ type alias RegneInfo =
     , regnet : List Gjort
     , skrevet : String
     , oppgaveType : OppgaveType
-    , startTid : Float
-    , venteTid : Float
+    , startTid : Posix
+    , venteTid : Posix
     }
 
 
 type alias Gjort =
-    { oppgave : Oppgave, svar : Tall, resultat : Sjekk, tid: Float }
+    { oppgave : Oppgave, svar : Tall, resultat : Sjekk, tid : Int }
 
 
 type Oppgave

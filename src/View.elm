@@ -1,38 +1,42 @@
-module View exposing (..)
+module View exposing (badges, hovedBoksStil, knappeStil, statistikk, view, viewSkrivNavn, visOppgave, visRegne, visRegnet)
 
-import List
-import Color
+import Art
+import Browser
 import Element exposing (..)
+import Element.Background as Background
+import Element.Border as Border
 import Element.Events as Events
 import Element.Font as Font
 import Element.Input as Input
 import Element.Keyed as Keyed
-import Element.Background as Background
-import Element.Border as Border
 import Html exposing (Html)
-import Html.Attributes as HA exposing (id, autocomplete, type_)
+import Html.Attributes as HA exposing (autocomplete, id, type_)
+import Keydown
+import List
 import Model exposing (..)
-import Keyboard
+import Task exposing (Task, perform)
+import Time
+
 
 
 -- VIEW
 
 
-view : Model -> Html Msg
+view : Model -> Browser.Document Msg
 view model =
-    Element.layout [] <|
-        Element.row
-            [ centerX
-            , centerY
-            , width <| shrink
-            ]
-            [ case model.steg of
-                SkrivNavn { navn } ->
-                    viewSkrivNavn navn
+    Element.row
+        [ centerX
+        , centerY
+        , width <| shrink
+        ]
+        [ case model.steg of
+            SkrivNavn { navn } ->
+                viewSkrivNavn navn
 
-                Regne info ->
-                    visRegne info
-            ]
+            Regne info ->
+                visRegne info
+        ]
+        |> (\ui -> { title = "Gange => Vinne", body = [ Element.layout [] ui ] })
 
 
 viewSkrivNavn : String -> Element Msg
@@ -52,7 +56,7 @@ viewSkrivNavn navn =
             ]
             { label = Input.labelLeft [] <| Element.text "Ditt navn:"
             , text = navn
-            , onChange = Just Skrev
+            , onChange = Skrev
             , placeholder = Nothing
             }
         , Element.el [] (Element.text "Velg hva du vil gjøre:")
@@ -61,13 +65,13 @@ viewSkrivNavn navn =
             , Element.spacing 20
             ]
             [ Input.button
-                (knappeStil ++ [ Events.onClick <| Velg Ganging, width fill ])
-                { onPress = Just <| Velg Ganging
+                (knappeStil ++ [ Events.onClick <| Velg Ganging Nothing, width fill ])
+                { onPress = Just <| Velg Ganging Nothing
                 , label = Element.text "Ganging"
                 }
             , Input.button
-                (knappeStil ++ [ Events.onClick <| Velg PlussOgMinus, width fill ])
-                { onPress = Just <| Velg PlussOgMinus
+                (knappeStil ++ [ Events.onClick <| Velg PlussOgMinus Nothing, width fill ])
+                { onPress = Just <| Velg PlussOgMinus Nothing
                 , label = Element.text "Pluss og minus"
                 }
             ]
@@ -86,11 +90,11 @@ hovedBoksStil =
 
 knappeStil : List (Attribute msg)
 knappeStil =
-    [ Border.color Color.lightBlue
+    [ Border.color Art.lightBlue
     , Border.solid
     , Border.rounded 5
     , Border.width 2
-    , Background.color Color.white
+    , Background.color Art.white
     , padding 5
     ]
 
@@ -100,56 +104,64 @@ visRegne info =
     let
         sendSvar =
             Svar info.oppgave info.skrevet
+
         seconds =
-            info.venteTid
+            Time.posixToMillis info.venteTid // 1000
+
         ones =
-            (floor seconds) % 10
+            remainderBy seconds 10
+
         tens =
-            floor <| seconds / 10
+            seconds // 10
+
         hundreds =
-            floor <| seconds / 100
+            seconds // 100
+
         oneCells =
-            List.repeat ones <| Element.el [Background.color Color.white] <| text "."
+            List.repeat ones <| Element.el [ Background.color Art.white ] <| text "."
+
         tenCells =
-            List.repeat tens <| Element.el [Background.color Color.lightBlue] <| text "-"
+            List.repeat tens <| Element.el [ Background.color Art.lightBlue ] <| text "-"
+
         hundredCells =
-            List.repeat hundreds <| Element.el [Background.color Color.blue] <| text "|"
+            List.repeat hundreds <| Element.el [ Background.color Art.blue ] <| text "|"
+
         timer =
-            Element.row [width shrink]
+            Element.row [ width shrink ]
                 [ text "⏱"
                 , Element.row [] hundredCells
                 , Element.row [] tenCells
                 , Element.row [] oneCells
                 ]
     in
-        Element.column
-            [ Element.spacing 10 ]
-            [ Element.column
-                hovedBoksStil
-                [ Element.el [] (Element.text <| info.navn ++ (badges info.regnet))
-                , Element.el [] (Element.text "Svar på oppgaven")
-                , Element.row
-                    [ spacing 10 ]
-                    [ Element.el [] <| visOppgave info.oppgave
-                    , Input.text
-                        [ htmlAttribute <| id "svar"
-                        , htmlAttribute <| type_ "text"
-                        , htmlAttribute <| HA.attribute "pattern" "[0-9]*"
-                        , Input.focusedOnLoad
-                        , Keyboard.onKeydown [ Keyboard.onEnter sendSvar ]
-                        , htmlAttribute <| autocomplete False
-                        , width <| px 75
-                        ]
-                        { label = Input.labelLeft [] Element.empty
-                        , text = info.skrevet
-                        , onChange = Just Skrev
-                        , placeholder = Nothing
-                        }
+    Element.column
+        [ Element.spacing 10 ]
+        [ Element.column
+            hovedBoksStil
+            [ Element.el [] (Element.text <| info.navn ++ badges info.regnet)
+            , Element.el [] (Element.text "Svar på oppgaven")
+            , Element.row
+                [ spacing 10 ]
+                [ Element.el [] <| visOppgave info.oppgave
+                , Input.text
+                    [ htmlAttribute <| id "svar"
+                    , htmlAttribute <| type_ "text"
+                    , htmlAttribute <| HA.attribute "pattern" "[0-9]*"
+                    , Input.focusedOnLoad
+                    , Keydown.onKeydown [ Keydown.onEnter sendSvar ]
+                    , htmlAttribute <| autocomplete False
+                    , width <| px 75
                     ]
-                , timer
+                    { label = Input.labelLeft [] none
+                    , text = info.skrevet
+                    , onChange = Skrev
+                    , placeholder = Nothing
+                    }
                 ]
-            , visRegnet info.regnet
+            , timer
             ]
+        , visRegnet info.regnet
+        ]
 
 
 badges : List Gjort -> String
@@ -157,66 +169,91 @@ badges regnet =
     let
         stat =
             statistikk regnet
+
         avatar =
             if stat.antall > 30 then
                 "🐅"
+
             else if stat.antall > 20 then
                 "🐈"
+
             else if stat.antall > 10 then
                 "🐁"
+
             else if stat.antall > 0 then
                 "🐀"
+
             else
                 ""
 
         hastighet =
-            if stat.vektetTid > 20 then 
+            if stat.vektetTid > 20 then
                 "🐢"
+
             else if stat.vektetTid > 10 then
                 "🐕"
+
             else if stat.vektetTid > 0 then
                 "🐇"
+
             else
                 ""
+
         ferdighet =
             if stat.riktige > 20 then
                 "🐘"
+
             else if stat.riktige > 10 then
                 "🐬"
+
             else if stat.riktige > 0 then
-                "🦉"
+                "\u{1F989}"
+
             else
                 ""
     in
-        avatar ++ hastighet ++ ferdighet
+    avatar ++ hastighet ++ ferdighet
 
-statistikk : List Gjort -> {riktige: Int, gale: Int, totalTid: Float, antall: Float, vektetTid: Float, snittTid: Float}
+
+statistikk : List Gjort -> { riktige : Int, gale : Int, totalTid : Float, antall : Float, vektetTid : Float, snittTid : Float }
 statistikk regnet =
     let
-        tidsVekt = 0.5
-        tell gjort ( riktige, gale, totalTid, antall, vektetTid) =
+        tidsVekt =
+            0.5
+
+        tell gjort stat =
             let
-                nyttAntall = antall + 1
-                nyVektetTid = gjort.tid + vektetTid*antall*tidsVekt / nyttAntall
+                nyttAntall =
+                    stat.antall + 1
+
+                nyVektetTid =
+                    toFloat gjort.tid + stat.vektetTid * stat.antall * tidsVekt / nyttAntall
+
+                nextStat =
+                    { stat
+                        | antall = nyttAntall
+                        , vektetTid = nyVektetTid
+                        , totalTid = stat.totalTid + toFloat gjort.tid
+                    }
             in
             case gjort.resultat of
                 Riktig ->
-                    ( riktige + 1, gale, totalTid + gjort.tid, nyttAntall, nyVektetTid )
+                    { nextStat | riktige = stat.riktige + 1 }
 
                 Galt ->
-                    ( riktige, gale + 1 , totalTid + gjort.tid, nyttAntall, nyVektetTid)
+                    { nextStat | gale = stat.gale + 1 }
 
-        ( riktige, gale , totalTid, antall, vektetTid) =
-            List.foldl tell ( 0, 0, 0, 0, 0) regnet
+        stats : { riktige : Int, gale : Int, totalTid : Float, antall : Float, vektetTid : Float }
+        stats =
+            List.foldl tell { riktige = 0, gale = 0, totalTid = 0, antall = 0, vektetTid = 0 } regnet
     in
-        { riktige = riktige 
-        , gale = gale 
-        , totalTid = totalTid 
-        , antall = antall 
-        , vektetTid = vektetTid
-        , snittTid = totalTid / antall
-        }
-
+    { riktige = stats.riktige
+    , gale = stats.gale
+    , totalTid = stats.totalTid
+    , antall = stats.antall
+    , vektetTid = stats.vektetTid
+    , snittTid = stats.totalTid / stats.antall
+    }
 
 
 visRegnet : List Gjort -> Element Msg
@@ -235,64 +272,66 @@ visRegnet regnet =
                         Minus a b ->
                             ( a, "-", b )
             in
-                [ el [ Font.alignRight ] <| text <| toString første
-                , el [ Font.center ] <| text <| operator
-                , el [ Font.alignRight ] <| text <| toString andre
-                ]
+            [ el [ Font.alignRight ] <| text <| String.fromInt første
+            , el [ Font.center ] <| text <| operator
+            , el [ Font.alignRight ] <| text <| String.fromInt andre
+            ]
 
         erLik gjort =
             case gjort.resultat of
                 Riktig ->
-                    el [ Font.center, Background.color Color.green ] <| text "="
+                    el [ Font.center, Background.color Art.green ] <| text "="
 
                 Galt ->
-                    el [ Font.center, Background.color Color.red ] <| text "≠"
+                    el [ Font.center, Background.color Art.red ] <| text "≠"
 
         visSvar gjort =
-            el [ Font.alignRight ] <| text <| toString gjort.svar
+            el [ Font.alignRight ] <| text <| String.fromInt gjort.svar
 
         historikk =
             case regnet of
                 [] ->
-                    empty
+                    none
 
                 gjort :: _ ->
                     case gjort.resultat of
-                        Riktig -> empty
+                        Riktig ->
+                            none
+
                         Galt ->
                             row
                                 (hovedBoksStil
                                     ++ [ padding 5
-                                    , spacing 5
-                                    ]
+                                       , spacing 5
+                                       ]
                                 )
-                                ((deler gjort)
+                                (deler gjort
                                     ++ [ erLik gjort
-                                    , visSvar gjort
-                                    ]
+                                       , visSvar gjort
+                                       ]
                                 )
 
         oppsummering =
             let
                 stat =
-                    statistikk regnet                
+                    statistikk regnet
             in
-                row [ padding 5, spacing 10, width fill, centerX ]
-                    [ el [ padding 5, alignLeft ] <| text <| "✅" ++ (toString stat.riktige)
-                    , el [ padding 5, centerX ] <| text <| "⏱" ++ (toString <| round stat.snittTid)
-                    , el [ padding 5, alignRight ] <| text <| "❌" ++ (toString stat.gale)
-                    ]
+            row [ padding 5, spacing 10, width fill, centerX ]
+                [ el [ padding 5, alignLeft ] <| text <| "✅" ++ String.fromInt stat.riktige
+                , el [ padding 5, centerX ] <| text <| "⏱" ++ (String.fromInt <| round stat.snittTid)
+                , el [ padding 5, alignRight ] <| text <| "❌" ++ String.fromInt stat.gale
+                ]
     in
-        column []
-            [ oppsummering
-            , historikk
-            ]
+    column []
+        [ oppsummering
+        , historikk
+        ]
 
 
 visOppgave : Oppgave -> Element msg
 visOppgave oppgave =
     let
-        ( a, op, b ) =
+        ( a_, op, b_ ) =
             case oppgave of
                 Gange a b ->
                     ( a, "*", b )
@@ -303,13 +342,13 @@ visOppgave oppgave =
                 Minus a b ->
                     ( a, "-", b )
 
-        x =
-            toString a
+        a__ =
+            String.fromInt a_
 
-        y =
-            toString b
+        b__ =
+            String.fromInt b_
 
         regneStykke =
-            x ++ " " ++ op ++ " " ++ y
+            a__ ++ " " ++ op ++ " " ++ b__
     in
-        Element.text <| regneStykke ++ " ="
+    Element.text <| regneStykke ++ " ="

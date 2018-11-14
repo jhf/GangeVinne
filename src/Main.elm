@@ -4,13 +4,13 @@ import Browser
 import Browser.Navigation as Nav
 import Html exposing (Html)
 import Model exposing (..)
-import Update exposing (update, lagTilfeldigOppgave)
-import View exposing (view)
 import Storage
-import Time exposing (every, second)
+import Time exposing (every)
+import Update exposing (lagTilfeldigOppgave, update)
+import View exposing (view)
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
     Browser.document
         { init = init
@@ -20,8 +20,8 @@ main =
         }
 
 
-init : ( Model, Cmd Msg )
-init =
+init : () -> ( Model, Cmd Msg )
+init () =
     ( { steg = SkrivNavn { navn = "" }
       }
     , Storage.loadName
@@ -33,8 +33,10 @@ subscriptions model =
     let
         ticker =
             case model.steg of
-                SkrivNavn _ -> Sub.none
+                SkrivNavn _ ->
+                    Sub.none
+
                 Regne _ ->
-                    every second Tid
+                    every 1000 Tid
     in
-    Sub.batch [Storage.readName, ticker]
+    Sub.batch [ Storage.readName, ticker ]
