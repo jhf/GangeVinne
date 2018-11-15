@@ -60,18 +60,25 @@ viewSkrivNavn navn =
             , placeholder = Nothing
             }
         , el [] (text "Velg hva du vil gjøre:")
-        , row
+        , let
+            ganging =
+                Velg Ganging Nothing Nothing
+
+            plussogminus =
+                Velg PlussOgMinus Nothing Nothing
+          in
+          row
             [ padding 10
             , spacing 20
             ]
             [ Input.button
-                (width fill :: knappeStil)
-                { onPress = Just <| Velg Ganging Nothing Nothing
+                (width fill :: Keydown.onKeydown [ Keydown.onSpace ganging ] :: knappeStil)
+                { onPress = Just ganging
                 , label = text "Ganging"
                 }
             , Input.button
-                (width fill :: knappeStil)
-                { onPress = Just <| Velg PlussOgMinus Nothing Nothing
+                (width fill :: Keydown.onKeydown [ Keydown.onSpace plussogminus ] :: knappeStil)
+                { onPress = Just plussogminus
                 , label = text "Pluss og minus"
                 }
             ]
