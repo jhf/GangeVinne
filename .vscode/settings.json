@@ -11,4 +11,5 @@
     "elm.analyseCommand": "./node_modules/.bin/elm-analyse",
     "eslint.packageManager": "yarn",
     "editor.tabSize": 2,
+    "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
 }
