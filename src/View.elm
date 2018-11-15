@@ -1,4 +1,4 @@
-module View exposing (badges, hovedBoksStil, knappeStil, statistikk, view, viewSkrivNavn, visOppgave, visRegne, visRegnet)
+module View exposing (view)
 
 import Art
 import Browser
@@ -94,7 +94,6 @@ knappeStil =
     , Border.solid
     , Border.rounded 5
     , Border.width 2
-    , Background.color Art.white
     , padding 5
     ]
 
