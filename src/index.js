@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
-const {Elm} = require('./Main');
-var app = Elm.Main.init();
+const { Elm } = require('./Main')
+var app = Elm.Main.init({})
 
 /*
 Storage.key() // When passed a number n, this method will return the name of the nth key in the storage.
@@ -11,25 +11,36 @@ Storage.removeItem() // When passed a key name, will remove that key from the st
 Storage.clear() // When invoked, will empty all keys out of the storage.
 */
 
-app.ports.storageKey.subscribe(function (index) {
-    var key = localStorage.key(index);
-    app.ports.storageKeyReply.send({ index: index, key: key });
-});
+/* eslint-env browser */
 
-app.ports.storageGetItem.subscribe(function (key) {
-    var value = localStorage.getItem(key);
-    app.ports.storageGetItemReply.send({ key: key, value: value });
-});
+if (app.ports.storageKey !== undefined) {
+  app.ports.storageKey.subscribe(function (index) {
+    var key = localStorage.key(index)
+    app.ports.storageKeyReply.send({ index: index, key: key })
+  })
+};
 
-app.ports.storageSetItem.subscribe(function (args) {
-    localStorage.setItem(args.key, args.value);
-});
+if (app.ports.storageGetItem !== undefined) {
+  app.ports.storageGetItem.subscribe(function (key) {
+    var value = localStorage.getItem(key)
+    app.ports.storageGetItemReply.send({ key: key, value: value })
+  })
+};
 
-app.ports.storageRemoveItem.subscribe(function (key) {
-    localStorage.removeItem(key);
-});
+if (app.ports.storageSetItem !== undefined) {
+  app.ports.storageSetItem.subscribe(function (args) {
+    localStorage.setItem(args.key, args.value)
+  })
+};
 
-app.ports.storageClear.subscribe(function () {
+if (app.ports.storageRemoveItem !== undefined) {
+  app.ports.storageRemoveItem.subscribe(function (key) {
+    localStorage.removeItem(key)
+  })
+};
+
+if (app.ports.storageClear !== undefined) {
+  app.ports.storageClear.subscribe(function () {
     localStorage.clear()
-});
-
+  })
+};
