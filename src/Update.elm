@@ -1,4 +1,4 @@
-module Update exposing (hoppTilSkriving, lagTilfeldigOppgave, regnUt, sjekkSvar, update)
+module Update exposing (update)
 
 import Browser.Dom as Dom
 import List
@@ -16,87 +16,94 @@ import Time
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case model.steg of
-        SkrivNavn { navn } ->
-            case msg of
-                Skrev noe ->
-                    ( { model | steg = SkrivNavn { navn = noe } }
-                    , storeName noe
-                    )
+    case ( model, msg ) of
+        ( _, Velg oppgaveType Nothing Nothing ) ->
+            ( model
+            , lagOppgave oppgaveType
+            )
 
-                Velg oppgaveType Nothing ->
-                    ( model, Task.perform (\time -> Velg oppgaveType <| Just time) Time.now )
+        ( _, Velg oppgaveType (Just oppgave) Nothing ) ->
+            ( model
+            , Task.perform
+                (\tid ->
+                    Velg oppgaveType (Just oppgave) (Just tid)
+                )
+                Time.now
+            )
 
-                Velg oppgaveType (Just tid) ->
-                    let
-                        info =
-                            { navn = navn
-                            , oppgave = Gange 0 0
-                            , siffer = 1
-                            , regnet = []
-                            , skrevet = ""
-                            , oppgaveType = oppgaveType
-                            , startTid = tid
-                            , venteTid = tid
-                            }
-                    in
-                    ( { model | steg = Regne info }
-                    , Cmd.batch
-                        [ lagTilfeldigOppgave info.oppgaveType
-                        , Task.perform Tid Time.now
-                        ]
-                    )
+        ( _, Velg oppgaveType (Just oppgave) (Just tid) ) ->
+            let
+                fasit =
+                    regnUt oppgave
+            in
+            ( Regne
+                { navn =
+                    case model of
+                        Regne info ->
+                            info.navn
 
-                _ ->
-                    ( model, Cmd.none )
+                        SkrivNavn { navn } ->
+                            navn
+                , oppgave = oppgave
+                , fasit = fasit
+                , siffer = String.length <| String.fromInt <| fasit
+                , regnet =
+                    case model of
+                        Regne info ->
+                            info.regnet
 
-        Regne info ->
-            case msg of
-                Ingenting ->
-                    ( model, Cmd.none )
+                        SkrivNavn _ ->
+                            []
+                , skrevet = ""
+                , oppgaveType = oppgaveType
+                , startTid = tid
+                , stopTid = tid
+                , waitedSeconds = 0
+                }
+            , hoppTilSkriving
+            )
 
-                Velg _ _ ->
-                    ( model, Cmd.none )
+        ( _, Velg _ _ _ ) ->
+            ( model, Cmd.none )
 
-                NyOppgave oppgave ->
-                    let
-                        fasit =
-                            regnUt oppgave
+        ( SkrivNavn { navn }, Skrev noe ) ->
+            ( SkrivNavn { navn = noe }
+            , storeName noe
+            )
 
-                        siffer =
-                            String.length <| String.fromInt <| fasit
-                    in
-                    ( { model | steg = Regne { info | oppgave = oppgave, siffer = siffer } }, Cmd.none )
+        ( Regne info, Skrev noe ) ->
+            let
+                skrevetSiffer =
+                    String.length noe
+            in
+            if skrevetSiffer < info.siffer then
+                ( Regne { info | skrevet = noe }, Cmd.none )
 
-                Skrev noe ->
-                    let
-                        skrevetSiffer =
-                            String.length noe
-                    in
-                    if skrevetSiffer < info.siffer then
-                        ( { model | steg = Regne { info | skrevet = noe } }, Cmd.none )
+            else
+                sjekkSvar info noe
 
-                    else
-                        let
-                            ( steg, cmd ) =
-                                sjekkSvar info noe
-                        in
-                        ( { model | steg = steg }, cmd )
+        ( Regne info, Svar oppgave skrevet ) ->
+            sjekkSvar info skrevet
 
-                Svar oppgave skrevet ->
-                    let
-                        ( steg, cmd ) =
-                            sjekkSvar info skrevet
-                    in
-                    ( { model | steg = steg }, cmd )
+        ( Regne info, Tid tid ) ->
+            ( Regne
+                { info
+                    | stopTid = tid
+                    , waitedSeconds =
+                        (Time.posixToMillis info.stopTid - Time.posixToMillis info.startTid)
+                            // 1000
+                }
+            , Cmd.none
+            )
 
-                Tid tid ->
-                    ( { model | steg = Regne { info | venteTid = tid } }
-                    , Cmd.none
-                    )
+        ( _, Ingenting ) ->
+            ( model, Cmd.none )
+
+        _ ->
+            ( model, Cmd.none )
 
 
-sjekkSvar : RegneInfo -> String -> ( Steg, Cmd Msg )
+sjekkSvar : RegneInfo -> String -> ( Model, Cmd Msg )
 sjekkSvar info skrevet =
     case toInt skrevet of
         Nothing ->
@@ -104,34 +111,39 @@ sjekkSvar info skrevet =
 
         Just svar ->
             let
-                fasit =
-                    regnUt info.oppgave
-
                 resultat =
-                    if svar == fasit then
+                    if svar == info.fasit then
                         Riktig
 
                     else
                         Galt
 
                 gjort =
-                    { oppgave = info.oppgave, svar = svar, resultat = resultat, tid = Time.posixToMillis info.venteTid - Time.posixToMillis info.startTid }
+                    { oppgave = info.oppgave
+                    , svar = svar
+                    , resultat = resultat
+                    , tid = info.waitedSeconds
+                    }
 
-                nyttSteg =
+                model =
                     Regne
                         { info
                             | regnet = gjort :: info.regnet
                             , skrevet = ""
-                            , venteTid = info.venteTid
-                            , startTid = info.venteTid
+                            , stopTid = info.stopTid
+                            , startTid = info.stopTid
                         }
             in
-            ( nyttSteg
-            , Cmd.batch
-                [ lagTilfeldigOppgave info.oppgaveType
-                , hoppTilSkriving
-                ]
-            )
+            ( model, lagOppgave info.oppgaveType )
+
+
+lagOppgave : OppgaveType -> Cmd Msg
+lagOppgave oppgaveType =
+    Random.generate
+        (\oppgave ->
+            Velg oppgaveType (Just oppgave) Nothing
+        )
+        (oppgaveGenerator oppgaveType)
 
 
 regnUt : Oppgave -> Int
@@ -153,18 +165,22 @@ hoppTilSkriving =
         |> Task.attempt (\_ -> Ingenting)
 
 
-lagTilfeldigOppgave : OppgaveType -> Cmd Msg
-lagTilfeldigOppgave oppgaveType =
+oppgaveGenerator : OppgaveType -> Random.Generator Oppgave
+oppgaveGenerator oppgaveType =
+    let
+        lagMinus a b =
+            if a > b then
+                Minus a b
+
+            else
+                Minus b a
+    in
     case oppgaveType of
         Ganging ->
-            let
-                toTilfeldigeTall =
-                    Random.pair (Random.int 0 10) (Random.int 0 10)
-
-                lagOppgave ( a, b ) =
-                    NyOppgave <| Gange a b
-            in
-            Random.generate lagOppgave toTilfeldigeTall
+            Random.map2
+                (\a b -> Gange a b)
+                (Random.int 0 10)
+                (Random.int 0 10)
 
         PlussOgMinus ->
             let
@@ -173,18 +189,9 @@ lagTilfeldigOppgave oppgaveType =
 
                 største =
                     20
-
-                lageTilfeldigeTall =
-                    Random.map3 lagOppgave (Random.uniform True [ False ]) (Random.int minste største) (Random.int minste største)
-
-                lagMinus a b =
-                    if a > b then
-                        Minus a b
-
-                    else
-                        Minus b a
-
-                lagOppgave pluss a b =
+            in
+            Random.map3
+                (\pluss a b ->
                     if pluss then
                         if a + b > største then
                             lagMinus a b
@@ -194,5 +201,7 @@ lagTilfeldigOppgave oppgaveType =
 
                     else
                         lagMinus a b
-            in
-            Random.generate NyOppgave lageTilfeldigeTall
+                )
+                (Random.uniform True [ False ])
+                (Random.int minste største)
+                (Random.int minste største)

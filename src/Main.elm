@@ -6,7 +6,7 @@ import Html exposing (Html)
 import Model exposing (..)
 import Storage
 import Time exposing (every)
-import Update exposing (lagTilfeldigOppgave, update)
+import Update exposing (update)
 import View exposing (view)
 
 
@@ -22,8 +22,7 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init () =
-    ( { steg = SkrivNavn { navn = "" }
-      }
+    ( SkrivNavn { navn = "" }
     , Storage.loadName
     )
 
@@ -32,7 +31,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     let
         ticker =
-            case model.steg of
+            case model of
                 SkrivNavn _ ->
                     Sub.none
 

@@ -29,7 +29,7 @@ view model =
         , centerY
         , width <| shrink
         ]
-        [ case model.steg of
+        [ case model of
             SkrivNavn { navn } ->
                 viewSkrivNavn navn
 
@@ -54,7 +54,7 @@ viewSkrivNavn navn =
             , Input.focusedOnLoad
             , htmlAttribute <| autocomplete False
             ]
-            { label = Input.labelLeft [centerX] <| text "Ditt navn:"
+            { label = Input.labelLeft [ centerX ] <| text "Ditt navn:"
             , text = navn
             , onChange = Skrev
             , placeholder = Nothing
@@ -65,13 +65,13 @@ viewSkrivNavn navn =
             , spacing 20
             ]
             [ Input.button
-                (knappeStil ++ [ Events.onClick <| Velg Ganging Nothing, width fill ])
-                { onPress = Just <| Velg Ganging Nothing
+                (width fill :: knappeStil)
+                { onPress = Just <| Velg Ganging Nothing Nothing
                 , label = text "Ganging"
                 }
             , Input.button
-                (knappeStil ++ [ Events.onClick <| Velg PlussOgMinus Nothing, width fill ])
-                { onPress = Just <| Velg PlussOgMinus Nothing
+                (width fill :: knappeStil)
+                { onPress = Just <| Velg PlussOgMinus Nothing Nothing
                 , label = text "Pluss og minus"
                 }
             ]
@@ -106,10 +106,11 @@ visRegne info =
             Svar info.oppgave info.skrevet
 
         seconds =
-            Time.posixToMillis info.venteTid // 1000
+            (Time.posixToMillis info.stopTid - Time.posixToMillis info.startTid)
+                // 1000
 
         ones =
-            remainderBy seconds 10
+            seconds |> modBy 10
 
         tens =
             seconds // 10
