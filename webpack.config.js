@@ -126,12 +126,7 @@ if (MODE === 'production') {
   module.exports = merge(common, {
     plugins: [
       // Delete everything from output directory and report to user
-      new CleanWebpackPlugin([outputDirectory], {
-        root: __dirname,
-        exclude: [],
-        verbose: true,
-        dry: false
-      }),
+      new CleanWebpackPlugin(),
       // Copy static assets
       new CopyWebpackPlugin([
         {
