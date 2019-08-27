@@ -179,8 +179,8 @@ oppgaveGenerator oppgaveType =
         Ganging ->
             Random.map2
                 (\a b -> Gange a b)
-                (Random.int 0 10)
-                (Random.int 0 10)
+                (Random.int 0 12)
+                (Random.int 0 12)
 
         PlussOgMinus ->
             let
