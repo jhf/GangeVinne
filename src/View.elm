@@ -119,10 +119,10 @@ visRegne info =
             seconds |> modBy 10
 
         tens =
-            seconds // 10
+            seconds // 10 |> modBy 10
 
         hundreds =
-            seconds // 100
+            seconds // 100 |> modBy 10
 
         oneCells =
             List.repeat ones <| el [ Background.color Art.white ] <| text "."
