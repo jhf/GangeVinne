@@ -2344,6 +2344,13 @@ elm-hot@^1.0.1:
   resolved "https://registry.yarnpkg.com/elm-hot/-/elm-hot-1.0.1.tgz#12751fc41ecf1ddc58b5492114d6f77395d3a440"
   integrity sha512-C6VEX3TqVJv+OhUKMMb2mcaSuRArqvCFNItqxue81/mlfX4PWwvovE5vqocgO3AnrStyHElCRm0KNknfDttEBw==
 
+elm-json@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/elm-json/-/elm-json-0.2.1.tgz#5b51606b3e59e23992e06e6408a7785fe35be3bb"
+  integrity sha512-BIkUJUpubbUOTrUDNxI1kCGwEhnvnj8veD5xVBxxEEmo3/J/w3ql/e/igWUvZgVPvmSAhsNWuG4KNRw+cy1M5A==
+  dependencies:
+    binwrap "^0.2.0"
+
 elm-test@^0.19.0-beta10, elm-test@^0.19.0-beta8:
   version "0.19.0"
   resolved "https://registry.yarnpkg.com/elm-test/-/elm-test-0.19.0.tgz#583b3c22e6572f3cd659e88b5d02d88ae0096932"
