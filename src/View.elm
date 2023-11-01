@@ -178,7 +178,13 @@ badges regnet =
             statistikk regnet
 
         avatar =
-            if stat.antall > 30 then
+            if stat.antall > 50 then
+                "🐙"
+
+            else if stat.antall > 40 then
+                "🐳"
+
+            else if stat.antall > 30 then
                 "🐅"
 
             else if stat.antall > 20 then
@@ -187,14 +193,17 @@ badges regnet =
             else if stat.antall > 10 then
                 "🐁"
 
-            else if stat.antall > 0 then
+            else if stat.antall > 5 then
                 "🐀"
 
             else
-                ""
+                "🐞"
 
         hastighet =
-            if stat.vektetTid > 20 then
+            if stat.vektetTid > 30 then
+                "🐌"
+
+            else if stat.vektetTid > 20 then
                 "🐢"
 
             else if stat.vektetTid > 10 then
@@ -208,13 +217,16 @@ badges regnet =
 
         ferdighet =
             if stat.riktige > 20 then
-                "🐘"
+                "🐊"
 
             else if stat.riktige > 10 then
-                "🐬"
+                "🦧"
 
             else if stat.riktige > 0 then
-                "\u{1F989}"
+                "🐬"
+
+            else if stat.riktige = 0 then
+                "🐘"
 
             else
                 ""
