@@ -7,9 +7,9 @@
     "scripts": {
         "test": "elm-test",
         "start": "yarn run dev",
-        "dev": "webpack-dev-server --hot --colors --port 4000",
-        "build": "webpack",
-        "prod": "webpack -p"
+        "dev": "webpack-dev-server --hot --color --port 4000",
+        "build": "NODE_ENV=development webpack",
+        "prod": "NODE_ENV=production webpack"
     },
     "repository": {
         "type": "git",
