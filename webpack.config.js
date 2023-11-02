@@ -18,6 +18,7 @@ const common = {
         publicPath: "/",
         filename: filename,
     },
+    stats: "errors-only",
     plugins: [
         new HTMLWebpackPlugin({
             template: "src/index.html",
@@ -86,14 +87,16 @@ if (MODE === "development") {
             ],
         },
         devServer: {
-            inline: true,
-            stats: "errors-only",
-            contentBase: path.join(__dirname, "src/assets"),
+            static: {
+                directory: path.join(__dirname, "src/assets"),
+            },
             historyApiFallback: true,
-            before(app) {
+            setupMiddlewares(middlewares, devServer) {
+                const app = devServer.app;
                 app.get("/test", (req, res) => {
                     res.json({ result: "OK" });
                 });
+                return middlewares;
             },
         },
     });
