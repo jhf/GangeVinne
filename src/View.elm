@@ -220,12 +220,12 @@ badges regnet =
                 "🐊"
 
             else if stat.riktige > 10 then
-                "🦧"
+                "\u{1F9A7}"
 
             else if stat.riktige > 0 then
                 "🐬"
 
-            else if stat.riktige = 0 then
+            else if stat.riktige == 0 then
                 "🐘"
 
             else
