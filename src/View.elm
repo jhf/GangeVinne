@@ -138,7 +138,18 @@ visRegne info =
 
         timer =
             row [ width shrink ]
-                [ text "⏱"
+                [ Input.button
+                    [ focused []
+                    ]
+                    { onPress = Just Pause
+                    , label =
+                        text <|
+                            if info.pause then
+                                "💤"
+
+                            else
+                                "⏱"
+                    }
                 , row [] hundredCells
                 , row [] tenCells
                 , row [] oneCells
@@ -149,28 +160,41 @@ visRegne info =
         [ column
             hovedBoksStil
             [ el [] (text <| info.navn ++ badges info.regnet)
-            , el [] (text "Svar på oppgaven")
-            , row
-                [ spacing 10 ]
-                [ el [] <| visOppgave info.oppgave
-                , Input.text
-                    [ htmlAttribute <| id "svar"
-                    , htmlAttribute <| type_ "text"
-                    , htmlAttribute <| HA.attribute "pattern" "[0-9]*"
-                    , Input.focusedOnLoad
-                    , Keydown.onKeydown [ Keydown.onEnter sendSvar ]
-                    , htmlAttribute <| autocomplete False
-                    , width <| px 75
-                    ]
-                    { label = Input.labelLeft [] none
-                    , text = info.skrevet
-                    , onChange = Skrev
-                    , placeholder = Nothing
-                    }
-                ]
+            , el [ centerX ]
+                (text <|
+                    if info.pause then
+                        "Pause"
+
+                    else
+                        "Svar på oppgaven"
+                )
+            , if info.pause then
+                el [ centerX ] <| text "😴"
+
+              else
+                el [ centerX ]
+                    (row
+                        [ spacing 10 ]
+                        [ el [] <| visOppgave info.oppgave
+                        , Input.text
+                            [ htmlAttribute <| id htmlIdSvar
+                            , htmlAttribute <| type_ "text"
+                            , htmlAttribute <| HA.attribute "pattern" "[0-9]*"
+                            , Input.focusedOnLoad
+                            , Keydown.onKeydown [ Keydown.onEnter sendSvar ]
+                            , htmlAttribute <| autocomplete False
+                            , width <| px 75
+                            ]
+                            { label = Input.labelLeft [] none
+                            , text = info.skrevet
+                            , onChange = Skrev
+                            , placeholder = Nothing
+                            }
+                        ]
+                    )
             , timer
             ]
-        , visRegnet info.regnet
+        , el [ width fill ] <| visRegnet info.regnet
         ]
 
 
@@ -343,13 +367,13 @@ visRegnet regnet =
                 stat =
                     statistikk regnet
             in
-            row [ padding 5, spacing 10, width fill, centerX ]
+            row [ padding 5, spacing 10, width fill ]
                 [ el [ padding 5, alignLeft ] <| text <| "✅" ++ String.fromInt stat.riktige
                 , el [ padding 5, centerX ] <| text <| "⏱" ++ (String.fromInt <| round stat.snittTid)
                 , el [ padding 5, alignRight ] <| text <| "❌" ++ String.fromInt stat.gale
                 ]
     in
-    column []
+    column [ width fill ]
         [ oppsummering
         , historikk
         ]

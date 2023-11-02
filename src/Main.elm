@@ -1,8 +1,6 @@
 module Main exposing (main)
 
 import Browser
-import Browser.Navigation as Nav
-import Html exposing (Html)
 import Model exposing (..)
 import Storage
 import Time exposing (every)

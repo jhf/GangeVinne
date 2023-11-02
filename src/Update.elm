@@ -1,7 +1,6 @@
 module Update exposing (update)
 
 import Browser.Dom as Dom
-import List
 import Model exposing (..)
 import Random
 import Storage exposing (storeName)
@@ -44,6 +43,7 @@ update msg model =
 
                         SkrivNavn { navn } ->
                             navn
+
                 , oppgave = oppgave
                 , fasit = fasit
                 , siffer = String.length <| String.fromInt <| fasit
@@ -54,11 +54,13 @@ update msg model =
 
                         SkrivNavn _ ->
                             []
+
                 , skrevet = ""
                 , oppgaveType = oppgaveType
                 , startTid = tid
                 , stopTid = tid
-                , waitedSeconds = 0
+                , sekunderVentet = 0
+                , pause = False
                 }
             , hoppTilSkriving
             )
@@ -66,7 +68,7 @@ update msg model =
         ( _, Velg _ _ _ ) ->
             ( model, Cmd.none )
 
-        ( SkrivNavn { navn }, Skrev noe ) ->
+        ( SkrivNavn {  }, Skrev noe ) ->
             ( SkrivNavn { navn = noe }
             , storeName noe
             )
@@ -86,14 +88,38 @@ update msg model =
             sjekkSvar info skrevet
 
         ( Regne info, Tid tid ) ->
-            ( Regne
-                { info
-                    | stopTid = tid
-                    , waitedSeconds =
-                        (Time.posixToMillis info.stopTid - Time.posixToMillis info.startTid)
-                            // 1000
-                }
-            , Cmd.none
+            let ny_info = if info.pause then
+                                let nyStopTid = tid
+                                    nyStartTid =
+                                        Time.millisToPosix (
+                                        (Time.posixToMillis nyStopTid) - (info.sekunderVentet * 1000)
+                                        )
+                                in
+                                    { info
+                                    | stopTid = nyStopTid
+                                    , startTid = nyStartTid
+                                    }
+
+                        else
+
+                            let nyStopTid = tid
+                                sekunderVentet =
+                                    (Time.posixToMillis nyStopTid - Time.posixToMillis info.startTid)
+                                                // 1000
+                            in
+                                { info
+                                | stopTid = nyStopTid
+                                , sekunderVentet = sekunderVentet
+                                }
+            in
+                ( Regne ny_info, Cmd.none )
+
+        ( Regne info, Pause ) ->
+            ( Regne { info | pause = not info.pause},
+                if info.pause then 
+                    hoppTilSkriving
+                else
+                    Cmd.none
             )
 
         ( _, Ingenting ) ->
@@ -122,7 +148,7 @@ sjekkSvar info skrevet =
                     { oppgave = info.oppgave
                     , svar = svar
                     , resultat = resultat
-                    , tid = info.waitedSeconds
+                    , tid = info.sekunderVentet
                     }
 
                 model =
@@ -161,7 +187,7 @@ regnUt oppgave =
 
 hoppTilSkriving : Cmd Msg
 hoppTilSkriving =
-    Dom.focus "svar"
+    Dom.focus htmlIdSvar
         |> Task.attempt (\_ -> Ingenting)
 
 

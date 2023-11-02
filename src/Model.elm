@@ -1,4 +1,4 @@
-module Model exposing (Gjort, Model(..), Msg(..), Oppgave(..), OppgaveType(..), RegneInfo, Sjekk(..), Tall)
+module Model exposing (Gjort, Model(..), Msg(..), Oppgave(..), OppgaveType(..), RegneInfo, Sjekk(..), Tall, htmlIdSvar)
 
 import Time exposing (Posix)
 
@@ -19,6 +19,7 @@ type Msg
     | Skrev String
     | Ingenting
     | Tid Posix
+    | Pause
 
 
 type alias RegneInfo =
@@ -31,7 +32,8 @@ type alias RegneInfo =
     , oppgaveType : OppgaveType
     , startTid : Posix
     , stopTid : Posix
-    , waitedSeconds : Int
+    , sekunderVentet : Int
+    , pause : Bool
     }
 
 
@@ -57,3 +59,8 @@ type alias Tall =
 type OppgaveType
     = Ganging
     | PlussOgMinus
+
+
+htmlIdSvar : String
+htmlIdSvar =
+    "svar"
