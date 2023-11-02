@@ -3,6 +3,8 @@ logs
 *.log
 npm-debug.log*
 
+# Generated build files
+wwwroot/*
 
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
