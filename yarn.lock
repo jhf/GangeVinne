@@ -3808,6 +3808,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"elm-hot-webpack-loader@npm:^1.1.8":
+  version: 1.1.8
+  resolution: "elm-hot-webpack-loader@npm:1.1.8"
+  dependencies:
+    elm-hot: "npm:^1.1.6"
+  peerDependencies:
+    elm-webpack-loader: ^7.0.1
+  checksum: cef9d703220c2493e4078b75bbce67c1414ab44708c0b9cfeea3bf1b1e46687d2be55346114a71d34774c150a05fcb7d1b53c119164c96f063cecfcbf6dc2d2e
+  languageName: node
+  linkType: hard
+
+"elm-hot@npm:^1.1.6":
+  version: 1.1.6
+  resolution: "elm-hot@npm:1.1.6"
+  checksum: 196a1fc2eabfa1f1c74540624a8f656b98852629af1b5f2bd1198dd2d5146e2184c1bf67d939e2348c90c854d9298daf591d3b41e470234ec1bbe11489992a60
+  languageName: node
+  linkType: hard
+
 "elm-json@npm:^0.2.13":
   version: 0.2.13
   resolution: "elm-json@npm:0.2.13"
@@ -3882,15 +3900,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"elm-webpack-loader@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "elm-webpack-loader@npm:8.0.0"
+"elm-webpack-loader@npm:7.0.1":
+  version: 7.0.1
+  resolution: "elm-webpack-loader@npm:7.0.1"
   dependencies:
-    loader-utils: "npm:^2.0.0"
+    loader-utils: "npm:^1.4.0"
     node-elm-compiler: "npm:^5.0.0"
   peerDependencies:
     elm: ^0.19.1-3 || 0.19.0-no-deps
-  checksum: 601c2da9917aad0d83c06091936d749de00289f3eeef021de5f2d778455d868dadd02adec452c9bb833dac376da6866558c193b7d0bb80780ad8cc0de8a31490
+  checksum: 9557a0fb8dededb3d55e48891420ba3ac1c38ea09de5f1f7e00ce6e89d46a3966040b380d5601402c61bdcafda00f946470f153ec8e955c77fbcf3ad8686505f
   languageName: node
   linkType: hard
 
@@ -4949,10 +4967,11 @@ __metadata:
     elm: "npm:^0.19.1-6"
     elm-analyse: "npm:^0.16.5"
     elm-format: "npm:^0.8.7"
+    elm-hot-webpack-loader: "npm:^1.1.8"
     elm-json: "npm:^0.2.13"
     elm-test: "npm:0.19.1-revision12"
     elm-verify-examples: "npm:^5.3.0"
-    elm-webpack-loader: "npm:^8.0.0"
+    elm-webpack-loader: "npm:7.0.1"
     eslint: "npm:^8.52.0"
     eslint-config-standard: "npm:^17.1.0"
     eslint-plugin-import: "npm:^2.29.0"
@@ -6245,7 +6264,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json5@npm:^1.0.2":
+"json5@npm:^1.0.1, json5@npm:^1.0.2":
   version: 1.0.2
   resolution: "json5@npm:1.0.2"
   dependencies:
@@ -6356,6 +6375,17 @@ __metadata:
   version: 4.3.0
   resolution: "loader-runner@npm:4.3.0"
   checksum: a44d78aae0907a72f73966fe8b82d1439c8c485238bd5a864b1b9a2a3257832effa858790241e6b37876b5446a78889adf2fcc8dd897ce54c089ecc0a0ce0bf0
+  languageName: node
+  linkType: hard
+
+"loader-utils@npm:^1.4.0":
+  version: 1.4.2
+  resolution: "loader-utils@npm:1.4.2"
+  dependencies:
+    big.js: "npm:^5.2.2"
+    emojis-list: "npm:^3.0.0"
+    json5: "npm:^1.0.1"
+  checksum: 2b726088b5526f7605615e3e28043ae9bbd2453f4a85898e1151f3c39dbf7a2b65d09f3996bc588d92ac7e717ded529d3e1ea3ea42c433393be84a58234a2f53
   languageName: node
   linkType: hard
 
