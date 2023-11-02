@@ -5,16 +5,12 @@ import Browser
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
-import Element.Events as Events
 import Element.Font as Font
 import Element.Input as Input
-import Element.Keyed as Keyed
-import Html exposing (Html)
 import Html.Attributes as HA exposing (autocomplete, id, type_)
 import Keydown
 import List
 import Model exposing (..)
-import Task exposing (Task, perform)
 import Time
 
 
@@ -85,24 +81,31 @@ viewSkrivNavn navn =
         ]
 
 
+standardSkrift : List (Attribute msg)
+standardSkrift =
+    [ Font.size 48 ]
+
+
 hovedBoksStil : List (Attribute msg)
 hovedBoksStil =
-    [ Border.width 2
-    , Border.rounded 5
-    , padding 10
-    , spacing 5
-    , height shrink
-    ]
+    standardSkrift
+        ++ [ Border.width 2
+           , Border.rounded 5
+           , padding 10
+           , spacing 5
+           , height shrink
+           ]
 
 
 knappeStil : List (Attribute msg)
 knappeStil =
-    [ Border.color Art.lightBlue
-    , Border.solid
-    , Border.rounded 5
-    , Border.width 2
-    , padding 5
-    ]
+    standardSkrift
+        ++ [ Border.color Art.lightBlue
+           , Border.solid
+           , Border.rounded 5
+           , Border.width 2
+           , padding 5
+           ]
 
 
 visRegne : RegneInfo -> Element Msg
@@ -142,7 +145,7 @@ visRegne info =
                 ]
     in
     column
-        [ spacing 10 ]
+        (standardSkrift ++ [ spacing 10 ])
         [ column
             hovedBoksStil
             [ el [] (text <| info.navn ++ badges info.regnet)
@@ -271,7 +274,12 @@ statistikk regnet =
     , totalTid = stats.totalTid
     , antall = stats.antall
     , vektetTid = stats.vektetTid
-    , snittTid = stats.totalTid / stats.antall
+    , snittTid =
+        if stats.antall > 0 then
+            stats.totalTid / stats.antall
+
+        else
+            0
     }
 
 
