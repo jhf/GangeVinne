@@ -1,0 +1,7 @@
+[build]
+  command = "yarn prod"
+  publish = "wwwroot"
+
+[build.environment]
+  # node-sass@9 and the rest of the toolchain need Node 20 (see .nvmrc).
+  NODE_VERSION = "20"

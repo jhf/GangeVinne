@@ -9,13 +9,16 @@ const outputDirectory = "wwwroot";
 const MODE =
     process.env.NODE_ENV === "production" ? "production" : "development";
 const filename = MODE === "production" ? "[name]-[hash].js" : "index.js";
+// Base path for emitted assets. Set PUBLIC_PATH when the app is hosted under a
+// sub-path (e.g. GitHub Pages project sites serve from "/<repo>/").
+const publicPath = process.env.PUBLIC_PATH || "/";
 
 const common = {
     mode: MODE,
     entry: "./src/index.js",
     output: {
         path: path.join(__dirname, outputDirectory),
-        publicPath: "/",
+        publicPath: publicPath,
         filename: filename,
     },
     stats: "errors-only",
